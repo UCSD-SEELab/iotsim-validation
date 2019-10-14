@@ -1,154 +1,154 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 '''
-Python 2.7 script on the host Pi for power measuring and model fitting.
+Python 3.5 script on the host Pi for model fitting.
 
 Author: Xiaofan Yu
 Date: 10/14/2019
 '''
-import sys
-import os
-import time
-#import powermeter
 import numpy as np
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
 from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
 
-def run_workload(platform, workload, **kwargs):
-    pass
+MODEL = ['linear', 'poly', 'exp', 'log']
 
-def MSE(X, Y):
-    '''
-    Compute the mean square error of X and Y
+class ModelFitting:
+    def fit(self, X, Y, mode):
 
-    Args:
-        X, Y (n*1 float array): two arrays to compare
 
-    Returns:
-        MSE (float): mean square error
-    '''
-    X, Y = np.array(X), np.array(Y)
-    assert(X.shape == Y.shape), "MSE: X and Y does not match!"
+    def MSE(self, X, Y):
+        '''
+        Compute the mean square error of X and Y
 
-    MSE = np.square(np.subtract(X, Y)).mean()
-    return MSE
+        Args:
+            X, Y (n*1 float array): two arrays to compare
 
-def fit_linear(data_size, value):
-    '''
-    Try to fit the value-input data size model with Linear Regression
-    The value here can be avg power or exec. time.
+        Returns:
+            MSE (float): mean square error
+        '''
+        X, Y = np.array(X), np.array(Y)
+        assert(X.shape == Y.shape), "MSE: X and Y does not match!"
 
-    Args:
-        data_size (n*1 int array): the size of the input data in kB
-        value (n*1 float array): the target value of regression
+        MSE = np.square(np.subtract(X, Y)).mean()
+        return MSE
 
-    Returns:
-        popt (float array): opt. coefficients
-        mse (float): Mean Square Error
-    '''
-    data_size, value = np.array(data_size), np.array(value)
-    assert (data_size.shape[0] == value.shape[0]), \
-            "fit_linear: input dimension does not match!"
-    if len(data_size.shape) == 1: # if data_size is 1d, expand to 2d
-        data_size = data_size.reshape(-1, 1)
+    def fit_linear(self, data_size, value):
+        '''
+        Try to fit the value-input data size model with Linear Regression
+        The value here can be avg power or exec. time.
 
-    lg = LinearRegression().fit(data_size, value)
+        Args:
+            data_size (n*1 int array): the size of the input data in kB
+            value (n*1 float array): the target value of regression
 
-    fit_linear.popt = [lg.coef_, lg.intercept_]
-    predict = lg.predict(data_size)
-    fit_linear.mse = MSE(value, predict)
-    return fit_linear.popt, fit_linear.mse
+        Returns:
+            popt (float array): opt. coefficients
+            mse (float): Mean Square Error
+        '''
+        data_size, value = np.array(data_size), np.array(value)
+        assert (data_size.shape[0] == value.shape[0]), \
+                "fit_linear: input dimension does not match!"
+        if len(data_size.shape) == 1: # if data_size is 1d, expand to 2d
+            data_size = data_size.reshape(-1, 1)
 
-def fit_poly(data_size, value):
-    '''
-    Try to fit the value-input data size model with Polynomial Regression
-    The value here can be avg power or exec. time.
+        lg = LinearRegression().fit(data_size, value)
 
-    Args:
-        data_size (n*1 int array): the size of the input data in kB
-        value (n*1 int float): the target value of regression
+        popt = [lg.coef_, lg.intercept_]
+        predict = lg.predict(data_size)
+        mse = self.MSE(value, predict)
+        return popt, mse
 
-    Returns:
-        popt (float array): opt. coefficients
-        mse (float): Mean Square Error
-    '''
-    data_size, value = np.array(data_size), np.array(value)
-    assert (data_size.shape[0] == value.shape[0]), \
-            "fit_poly: input dimension does not match!"
-    if len(data_size.shape) == 1: # if data_size is 1d, expand to 2d
-        data_size = data_size.reshape(-1, 1)
+    def fit_poly(self, data_size, value):
+        '''
+        Try to fit the value-input data size model with Polynomial Regression
+        The value here can be avg power or exec. time.
 
-    poly = PolynomialFeatures(degree=2)
-    dsize_ = poly.fit_transform(data_size)
-    lg = LinearRegression().fit(dsize_, value)
+        Args:
+            data_size (n*1 int array): the size of the input data in kB
+            value (n*1 int float): the target value of regression
 
-    fit_poly.popt = [lg.coef_, lg.intercept_]
-    predict = lg.predict(dsize_)
-    fit_poly.mse = MSE(value, predict)
-    return fit_poly.popt, fit_poly.mse
+        Returns:
+            popt (float array): opt. coefficients
+            mse (float): Mean Square Error
+        '''
+        data_size, value = np.array(data_size), np.array(value)
+        assert (data_size.shape[0] == value.shape[0]), \
+                "fit_poly: input dimension does not match!"
+        if len(data_size.shape) == 1: # if data_size is 1d, expand to 2d
+            data_size = data_size.reshape(-1, 1)
 
-def fit_exp(data_size, value):
-    '''
-    Try to fit the value-input data size model with Exponential Regression
-    The value here can be avg power or exec. time.
+        poly = PolynomialFeatures(degree=2)
+        dsize_ = poly.fit_transform(data_size)
+        lg = LinearRegression().fit(dsize_, value)
 
-    Args:
-        data_size (1-d int array): the size of the input data in kB
-        value (1-d int float): the target value of regression
+        popt = [lg.coef_, lg.intercept_]
+        predict = lg.predict(dsize_)
+        mse = self.MSE(value, predict)
+        return popt, mse
 
-    Returns:
-        popt (float array): opt. coefficients
-        mse (float): Mean Square Error
-    '''
-    def exp_func(x, a, b, c):
-        return a * np.exp(b * x) + c
+    def fit_exp(self, data_size, value):
+        '''
+        Try to fit the value-input data size model with Exponential Regression
+        The value here can be avg power or exec. time.
 
-    data_size, value = np.array(data_size), np.array(value)
-    assert (data_size.shape[0] == value.shape[0]), \
-            "fit_exp: input dimension does not match!"
+        Args:
+            data_size (1-d int array): the size of the input data in kB
+            value (1-d int float): the target value of regression
 
-    fit_exp.popt, _ = curve_fit(exp_func, data_size, value)
+        Returns:
+            popt (float array): opt. coefficients
+            mse (float): Mean Square Error
+        '''
+        def exp_func(x, a, b, c):
+            return a * np.exp(b * x) + c
 
-    predict = exp_func(data_size, *fit_exp.popt)
-    fit_exp.mse = MSE(value, predict)
-    return fit_exp.popt, fit_exp.mse
+        data_size, value = np.array(data_size), np.array(value)
+        assert (data_size.shape[0] == value.shape[0]), \
+                "fit_exp: input dimension does not match!"
 
-def fit_log(data_size, value):
-    '''
-    Try to fit the value-input data size model with Log Regression
-    The value here can be avg power or exec. time.
+        popt, _ = curve_fit(exp_func, data_size, value)
 
-    Args:
-        data_size (1-d int array): the size of the input data in kB
-        value (1-d int float): the target value of regression
+        predict = exp_func(data_size, *spopt)
+        mse = self.MSE(value, predict)
+        return popt, mse
 
-    Returns:
-        popt (float array): opt. coefficients
-        mse (float): Mean Square Error
-    '''
-    def log_func(x, a, b, c):
-        return a * np.log(x + b) + c
+    def fit_log(self, data_size, value):
+        '''
+        Try to fit the value-input data size model with Log Regression
+        The value here can be avg power or exec. time.
 
-    data_size, value = np.array(data_size), np.array(value)
-    assert (data_size.shape[0] == value.shape[0]), \
-            "fit_log: input dimension does not match!"
+        Args:
+            data_size (1-d int array): the size of the input data in kB
+            value (1-d int float): the target value of regression
 
-    fit_log.popt, _ = curve_fit(log_func, data_size, value)
+        Returns:
+            popt (float array): opt. coefficients
+            mse (float): Mean Square Error
+        '''
+        def log_func(x, a, b, c):
+            return a * np.log(x + b) + c
 
-    predict = log_func(data_size, *fit_log.popt)
-    fit_log.mse = MSE(value, predict)
-    return fit_log.popt, fit_log.mse
+        data_size, value = np.array(data_size), np.array(value)
+        assert (data_size.shape[0] == value.shape[0]), \
+                "fit_log: input dimension does not match!"
+
+        popt, _ = curve_fit(log_func, data_size, value)
+
+        predict = log_func(data_size, *popt)
+        mse = self.MSE(value, predict)
+        return popt, mse
 
 
 def main():
+    ModelFit = ModelFitting()
     X = np.array([1.0, 2.0, 3.0, 4.0])
     # X = X.reshape(-1, 1)
     print(X.shape)
     Y = np.array([2.0, 4.0, 8.0, 16.0])
     print(Y.shape)
-    popt, mse = fit_log(Y, X)
+    popt, mse = ModelFit.fit_log(Y, X)
     print(popt)
     print(mse)
 
