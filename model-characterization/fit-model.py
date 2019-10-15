@@ -15,8 +15,32 @@ import matplotlib.pyplot as plt
 MODEL = ['linear', 'poly', 'exp', 'log']
 
 class ModelFitting:
-    def fit(self, X, Y, mode):
+    def __init__(self):
+        '''
+        Init the dict for fitting functions
+        '''
+        self.model = {
+                'linear': self.fit_linear,
+                'poly': self.fit_poly,
+                'exp': self.fit_exp,
+                'log': self.fit_log
+            }
 
+    def fit(self, X, Y, mode):
+        '''
+        General fitting function for all avaiable models
+
+        Args:
+            X, Y: data set to fit
+            mode: the model to use
+
+        Returns:
+            The return value of the selected fitting function.
+        '''
+        if mode in self.model.keys():
+            return self.model[mode](X, Y)
+        else:
+            raise Exception("No match model!")
 
     def MSE(self, X, Y):
         '''
@@ -148,7 +172,7 @@ def main():
     print(X.shape)
     Y = np.array([2.0, 4.0, 8.0, 16.0])
     print(Y.shape)
-    popt, mse = ModelFit.fit_log(Y, X)
+    popt, mse = ModelFit.fit(Y, X, 'log')
     print(popt)
     print(mse)
 
