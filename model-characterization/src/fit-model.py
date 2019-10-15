@@ -12,8 +12,6 @@ from sklearn.preprocessing import PolynomialFeatures
 from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
 
-MODEL = ['linear', 'poly', 'exp', 'log']
-
 class ModelFitting:
     def __init__(self):
         '''
