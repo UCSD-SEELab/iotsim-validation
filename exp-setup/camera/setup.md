@@ -1,0 +1,2 @@
+1. Install camera on RPi, enable camera in raspi-config
+2. Install Keras and Tensorflow on Pi. Follow the tutorial [here](https://medium.com/@abhizcc/installing-latest-tensor-flow-and-keras-on-raspberry-pi-aac7dbf95f2).
