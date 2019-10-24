@@ -35,6 +35,6 @@ class myMQTTClient():
 					port=self.port, \
 					client_id=self.client_id)
 		except Exception as e:
-			print(e.message, e.args)
+			print(e)
 
 		self.busy = False
