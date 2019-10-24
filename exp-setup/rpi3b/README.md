@@ -30,7 +30,7 @@
    ```shell
    mosquitto_pub -h <hostname> -p <port> -u <username> -P <password> \ 
    -t topic -i <client_id> -k <keepalive> -q <qos> \
-{ -f file | -l | -m message | -n | -s }
+   { -f file | -l | -m message | -n | -s }
    ```
 
    To subscribe a topic, use [mosquitto_sub](https://mosquitto.org/man/mosquitto_sub-1.html).
