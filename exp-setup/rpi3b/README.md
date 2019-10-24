@@ -1,3 +1,5 @@
+## Setup MQTT Broker and Client on Raspberry Pi 3B
+
 1. Install `paho-mqtt`:
 
    ```shell
@@ -17,9 +19,20 @@
 
 3. To use mosquitto:
 
-   To start the broker, use the following command to let the broker start listen on port <port>.
+   To start the broker, use the following command to let the broker start listen on port <port> with verbose:
 
    ```shell
    mosquitto -p <port> -v
    ```
 
+   On the client side, to publish a topc, use [mosquitto_pub](https://mosquitto.org/man/mosquitto_pub-1.html).
+
+   ```shell
+   mosquitto_pub -h <hostname> -p <port> -u <username> -P <password> -t topic -i <client_id> -k <keepalive> -q <qos> { -f file | -l | -m message | -n | -s }
+   ```
+
+   To subscribe a topic, use [mosquitto_sub](https://mosquitto.org/man/mosquitto_sub-1.html).
+
+   ```shell
+   mosquitto_sub -h <hostname> -p <port> -u <username> -P <password> -t topic -i <client_id> -k <keepalive> -q <qos>
+   ```
