@@ -28,11 +28,22 @@
    On the client side, to publish a topc, use [mosquitto_pub](https://mosquitto.org/man/mosquitto_pub-1.html).
 
    ```shell
-   mosquitto_pub -h <hostname> -p <port> -u <username> -P <password> -t topic -i <client_id> -k <keepalive> -q <qos> { -f file | -l | -m message | -n | -s }
+   mosquitto_pub -h <hostname> -p <port> -u <username> -P <password> \ 
+   -t topic -i <client_id> -k <keepalive> -q <qos> \
+{ -f file | -l | -m message | -n | -s }
    ```
 
    To subscribe a topic, use [mosquitto_sub](https://mosquitto.org/man/mosquitto_sub-1.html).
+   
+   ```shell
+   mosquitto_sub -h <hostname> -p <port> -u <username> -P <password> \
+   -t topic -i <client_id> -k <keepalive> -q <qos>
+   ```
+   
+4. **To run the script in this folder**
+
+   After starting the mosquitto broker on localhost (i.e. on this RPi 3B), run the following script to 1) connect to the broker, 2) subscribe the RPi0 image topic and save the image when receives.
 
    ```shell
-   mosquitto_sub -h <hostname> -p <port> -u <username> -P <password> -t topic -i <client_id> -k <keepalive> -q <qos>
+   python3 mqtt_sub.py
    ```
