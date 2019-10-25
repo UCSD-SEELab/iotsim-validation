@@ -16,11 +16,11 @@ from mqtt_pub import myMQTTClient
 import time
 import sys
 
-SERVER_IP = '192.168.137.210'
+SERVER_IP = '192.168.137.34'
 SERVER_PORT = 1884
 
 def main():
-	if len(sys.argv) >= 1:
+	if len(sys.argv) > 1:
 		res = (int(sys.argv[1]), int(sys.argv[2]))
 		camera = myCamera(resolution=res)
 	else:
@@ -30,8 +30,8 @@ def main():
 	img_path = './image.jpg'
 	
 	while True:
-		camera.capture(sav_path=img_path)
-		mqtt.pub_img(img_path=img_path)
+	    camera.capture(sav_path=img_path)
+	    mqtt.pub_img(img_path=img_path)
 
 
 if __name__ == '__main__':
