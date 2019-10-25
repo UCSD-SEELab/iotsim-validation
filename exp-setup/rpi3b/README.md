@@ -1,4 +1,6 @@
-## Setup MQTT Broker and Client on Raspberry Pi 3B
+## Setup MQTT, Scikit-Learn, Keras on Raspberry Pi 3B
+
+### MQTT Broker and Client
 
 1. Install `paho-mqtt`:
 
@@ -47,3 +49,35 @@
    ```shell
    python3 mqtt_sub.py
    ```
+
+### Scikit-Learn
+
+1. Installation on Raspberry Pi.
+
+   ```shell
+   pip3 install scikit-learn
+   ```
+
+2. Other required modules: `matplotlib` and `numpy`:
+
+   ```shell
+   pip3 install matplotlib
+   pip3 install numpy
+   ```
+
+3. 
+
+### Keras
+
+Although we end up with using `scikit-learn` instead of Keras, the installation and a simple example of Keras is noted here.
+
+1. Install Keras on Raspberry Pi. Follow the tutorial [here](https://medium.com/@abhizcc/installing-latest-tensor-flow-and-keras-on-raspberry-pi-aac7dbf95f2) to install tensorflow and Keras.
+   Note you can download the latest tensorflow compatible with the Python version, from the [release page](https://github.com/lhelontra/tensorflow-on-arm/releases/) provided by [lhelontra](https://github.com/lhelontra). In this case, *tensorflow-1.14.0-cp35-none-linux_armv7l.whl* for  Raspberry pi 2/3 is selected. 
+
+2. A simple example of Keras on Raspberry Pi is the MNIST classification. Run the script in this folder to test:
+
+   ```shell
+   python3 keras_mnist.py
+   ```
+
+   
