@@ -1,4 +1,10 @@
-## Setup MQTT, Scikit-Learn, Keras on Raspberry Pi 3B
+# Setup MQTT, Scikit-Learn, Keras on Raspberry Pi 3B
+
+[Environment Setup](#Environment-Setup)
+
+[Run Instructions](#Run-Instructions)
+
+## Environment Setup
 
 ### MQTT Broker and Client
 
@@ -42,13 +48,6 @@
    -t topic -i <client_id> -k <keepalive> -q <qos>
    ```
    
-4. **To run the script in this folder**
-
-   After starting the mosquitto broker on localhost (i.e. on this RPi 3B), run the following script to 1) connect to the broker, 2) subscribe the RPi0 image topic and save the image when receives.
-
-   ```shell
-   python3 mqtt_sub.py
-   ```
 
 ### Scikit-Learn
 
@@ -65,9 +64,7 @@
    pip3 install numpy
    ```
 
-3. 
-
-### Keras
+### Keras (Optional)
 
 Although we end up with using `scikit-learn` instead of Keras, the installation and a simple example of Keras is noted here.
 
@@ -78,6 +75,34 @@ Although we end up with using `scikit-learn` instead of Keras, the installation 
 
    ```shell
    python3 keras_mnist.py
+   ```
+
+## Run Instructions
+
+1. Start the mosquitto broker
+
+   ```shell
+   mosquitto -p 1884 -v
+   ```
+
+2. Start the receiver client on Raspberry Pi 3B, specifying whether perform local processing:
+
+   Do local processing with a MLP with hidden layers (5,10):
+
+   ```shell
+   python3 mqtt.py -p -l 5 10
+   ```
+
+   Do not process locally. Instead, directly forward the image:
+
+   ```shell
+   python3 mqtt.py
+   ```
+
+3. Trigger the image publishing on Raspberry Pi zero. The image is set to a resolution of 128*128.
+
+   ```shell
+   python3 main.py 128 128 # in ./rpi0
    ```
 
    
