@@ -40,11 +40,11 @@
 
 #define Experimental_MQTTClientEnabled true
 #define Experimental_RunNeuralNet true
-#define MQTT_Server_Address "192.168.2.38"
+#define MQTT_Server_Address "192.168.1.58"
 //#define MQTT_Server_Address "192.168.10.6"
 #define MQTT_Server_Port 61613
-#define MQTT_Server_Username "admin"
-#define MQTT_Server_Password "SamsungProject"
+//#define MQTT_Server_Username "admin"
+//#define MQTT_Server_Password "SamsungProject"
 #define MQTT_Streaming_Default_Format json;
 
 typedef enum { json, binB64, bin } MessageEncodingType_t;

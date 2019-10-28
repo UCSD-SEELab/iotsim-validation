@@ -747,7 +747,8 @@ void ServiceConnector::processReadings() {
 				M_MQTT_TRACE("Publishing MSG to MQTT: %s\r\n", msg);
 				if (!mqttClient.isConnected()) {
 					M_MQTT_TRACE("Not connected to MQTT... reconnecting\r\n");
-					mqttClient.connect("Particle_" + System.deviceID(), MQTT_Server_Username, MQTT_Server_Password);
+					//mqttClient.connect("Particle_" + System.deviceID(), MQTT_Server_Username, MQTT_Server_Password);
+					mqttClient.connect("Particle_" + System.deviceID());
 				}
 				if (mqttClient.isConnected()) {
 					M_MQTT_TRACE("Client is connected... publish to MetaSense/nnjson\r\n");
@@ -779,7 +780,8 @@ void ServiceConnector::outMsgToMQTT(const char* msg) {
 		M_MQTT_TRACE("Publishing MSG to MQTT: %s\r\n", msg);
 		if (!mqttClient.isConnected()) {
 			M_MQTT_TRACE("Not connected to MQTT... reconnecting\r\n");
-			mqttClient.connect("Particle_" + System.deviceID(), MQTT_Server_Username, MQTT_Server_Password);
+			// mqttClient.connect("Particle_" + System.deviceID(), MQTT_Server_Username, MQTT_Server_Password);
+    		mqttClient.connect("Particle_" + System.deviceID());
     }
 		if (mqttClient.isConnected()) {
 			M_MQTT_TRACE("Client is connected... publish to MetaSense/msgjson\r\n");
