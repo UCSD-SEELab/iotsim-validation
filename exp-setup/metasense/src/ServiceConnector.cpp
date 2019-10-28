@@ -83,7 +83,8 @@ void ServiceConnector::begin()
   M_MQTT_TRACE("streamMQTT value %d\n\r", SensorConfig.streamMQTT)
   if (SensorConfig.streamMQTT) {
 		M_MQTT_TRACE("Connecting to server")
-		mqttClient.connect("Particle_" + System.deviceID(), MQTT_Server_Username, MQTT_Server_Password);
+		// mqttClient.connect("Particle_" + System.deviceID(), MQTT_Server_Username, MQTT_Server_Password);
+		mqttClient.connect("Particle_" + System.deviceID());
 	}
 
 	#if (PLATFORM_ID == 6)
@@ -742,8 +743,8 @@ void ServiceConnector::processReadings() {
 
 			M_MQTT_TRACE("outMsgToMQTT: isWiFiEnabled %d, updatesPending %d, MQTTClientEnabled %d\r\n",
 					sensor.isWiFiEnabled(), System.updatesPending(), MQTTClientEnabled);
-			if (sensor.isWiFiEnabled() && Particle.connected() && !System.updatesPending()
-					&& MQTTClientEnabled) {
+			//if (sensor.isWiFiEnabled() && Particle.connected() && !System.updatesPending()
+			//		&& MQTTClientEnabled) {
 				M_MQTT_TRACE("Publishing MSG to MQTT: %s\r\n", msg);
 				if (!mqttClient.isConnected()) {
 					M_MQTT_TRACE("Not connected to MQTT... reconnecting\r\n");
@@ -754,7 +755,7 @@ void ServiceConnector::processReadings() {
 					M_MQTT_TRACE("Client is connected... publish to MetaSense/nnjson\r\n");
 					mqttClient.publish("MetaSense/nnjson", msg);
 				}
-			}
+			//}
 		}
 }
 
@@ -798,7 +799,8 @@ void ServiceConnector::outB64MsgToMQTT(const char* msg) {
 		M_MQTT_TRACE("Publishing MSG to MQTT: %s\r\n", msg);
 		if (!mqttClient.isConnected()) {
 			M_MQTT_TRACE("Not connected to MQTT... reconnecting\r\n");
-			mqttClient.connect("Particle_" + System.deviceID(), MQTT_Server_Username, MQTT_Server_Password);
+			// mqttClient.connect("Particle_" + System.deviceID(), MQTT_Server_Username, MQTT_Server_Password);
+			mqttClient.connect("Particle_" + System.deviceID());
     }
 		if (mqttClient.isConnected()) {
 			M_MQTT_TRACE("Client is connected... publish to MetaSense/msgb64\r\n");
@@ -815,7 +817,8 @@ void ServiceConnector::outBMsgToMQTT(const uint8_t* msg, unsigned int len) {
 		M_MQTT_TRACE("Publishing binary MSG to MQTT msg len: %d\r\n", len);
 		if (!mqttClient.isConnected()) {
 			M_MQTT_TRACE("Not connected to MQTT... reconnecting\r\n");
-			mqttClient.connect("Particle_" + System.deviceID(), MQTT_Server_Username, MQTT_Server_Password);
+			// mqttClient.connect("Particle_" + System.deviceID(), MQTT_Server_Username, MQTT_Server_Password);
+    		mqttClient.connect("Particle_" + System.deviceID());
     }
 		if (mqttClient.isConnected()) {
 			M_MQTT_TRACE("Client is connected... publish to MetaSense/msgbin\r\n");

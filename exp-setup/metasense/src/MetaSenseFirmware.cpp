@@ -29,6 +29,8 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "application.h"
+int led1 = D7;
+
 int freeRam();
 int processMsg(String extra);
 void button_clicked(system_event_t event, int param);
@@ -38,7 +40,8 @@ void loop();
 void serialEvent();
 void serialEvent1();
 
-SYSTEM_MODE(SEMI_AUTOMATIC);
+SYSTEM_MODE(MANUAL); // to prevent the device from trying to connect 
+					 // to cloud before running firmware
 SYSTEM_THREAD(ENABLED);
 STARTUP(System.enableFeature(FEATURE_RETAINED_MEMORY));
 STARTUP(System.enableFeature(FEATURE_RESET_INFO));
@@ -171,6 +174,7 @@ void re_enable_sleep() {
 
 void setup()
 {
+	pinMode(led1, OUTPUT);
 	//TODO: Experimental features to enable
 	connector.MQTTClientEnabled = Experimental_MQTTClientEnabled;
 	connector.RunNeuralNet = Experimental_RunNeuralNet;
@@ -211,7 +215,7 @@ void setup()
 	//System.on(reset_pending, reset_pending_event);
 
 	//Cloud function to send commands via Cloud
-	bool success = Particle.function("processMsg", processMsg);
+	// bool success = Particle.function("processMsg", processMsg);
 
 	/*
 	//To read the charge level
@@ -224,7 +228,7 @@ void setup()
 	//Configure seral ports
 	Serial.begin(serialSpeed);		//USB uart on photon
 	//Serial.blockOnOverrun(false); //To avoid blocking the sensor when logging
-	 															//stuff and the serial is not available
+	 															//stuff and the serial is not availabl
 
 	Serial1.begin(serialSpeed);		//Tx/Rx pins on photon
 	Serial1.println();		//Tx/Rx pins on photon
@@ -285,6 +289,7 @@ void setup()
 
 void loop()
 {
+	digitalWrite(led1, HIGH);
 	mqttClient.loop();
 	if (connector.updateReadings()){
 		INO_TRACE("---------Update Readings returned true.---------\n");

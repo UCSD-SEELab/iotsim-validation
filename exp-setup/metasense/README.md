@@ -31,9 +31,9 @@ Use the CLI tool in terminal is the most convenient option. Following the [insta
 
 2. Enter Wi-Fi Network Reset Mode. Then use `particle setup` to guide you through setting up your account and your device
 
-### Compile and Flash
+### Compile, Flash and Serial Monitor
 
-**Important Note**: To compile and flash program to your Photon, you only need to setup your Particle account. Setting up Photon and register it on network is not required.
+**Important Note**: To compile and flash program to your Photon, you only need to setup your Particle account and make sure you have network connection. Setting up Photon and register it on network is not required.
 
 1. To compile a project in the current directory
 
@@ -50,3 +50,17 @@ Use the CLI tool in terminal is the most convenient option. Following the [insta
    ```shell
    particle flash --usb firmware.bin
    ```
+
+3. Use a Serial Monitor (read-only) is usually very helpful during debugging. However, you will have to use other tools like PuTTY to interact over serial.
+
+   ```shell
+    particle serial monitor --port COM3
+   ```
+
+   
+
+    
+
+   
+
+   

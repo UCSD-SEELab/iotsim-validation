@@ -166,5 +166,6 @@ venv.bak/
 # Vim swaps
 *.sw*
 
-# photon bin files
+# photon bin files and testing files
 *.bin
+*.ino
