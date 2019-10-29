@@ -84,11 +84,11 @@ void Sensor::begin()
 	sdcard_Init();
 	barometer_Init();
 	afe.begin();
-	if(init) {
-		EEPROM.get(0, SensorConfig);
-		SensorConfig.AFESerial[9]=0;
-		SensorConfig.MACAddress[19]=0;
-	}
+	//if(init) {
+		// EEPROM.get(0, SensorConfig);
+	//	SensorConfig.AFESerial[9]=0;
+	//	SensorConfig.MACAddress[19]=0;
+	//}
 }
 double Sensor::getPowerLevel()
 {

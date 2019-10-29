@@ -139,7 +139,6 @@ class ServiceConnector
 
     void execute_setup_command(int command);
     //unsigned long remainingWait();
-    void performSensorRead();
     void doSendBatchToCloud(uint8_t *in, size_t input_size, bool sendDirect);
     void do_streamAll(uint32_t timestamp,
 			AFE::Gas_Raw_t& gas, Sensor::Reading_Raw_t& bar_hum,
@@ -150,7 +149,7 @@ class ServiceConnector
 
 		void uploadMsg(byte msg[], int binBufLen, const char* endpoint);
 
-    void outMessage(const char* msg, Msg_Source_t dest);
+/*    void outMessage(const char* msg, Msg_Source_t dest);
     void ackMessage(const char* str, Msg_Source_t source);
 		void outMsgToCloud(const char* msg);
 		void outBMsgToCloud(const char* msg);
@@ -160,6 +159,7 @@ class ServiceConnector
     void logMessageToSD(const char* msg);
     void syncTimeWithWiFi();
     //void doReceiveCommand();
+*/
 };
 
 #endif

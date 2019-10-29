@@ -40,7 +40,7 @@
 
 #define Experimental_MQTTClientEnabled true
 #define Experimental_RunNeuralNet true
-#define MQTT_Server_Address "192.168.1.58"
+#define MQTT_Server_Address "192.168.1.57"
 //#define MQTT_Server_Address "192.168.10.6"
 #define MQTT_Server_Port 61613
 //#define MQTT_Server_Username "admin"
@@ -76,7 +76,7 @@ const bool stealthMode = false;					// turn off RGB LED during normal operation
 const String wifiSSID = "SEELAB_IN_LAB"; 		// CSC mobile hotspot
 const String wifiPassword = "seelab2148"; 		// CSC mobile hotspot
 const int8_t UTCOffset = -7;  					// -7 for Pacific
-const uint8_t wifiAttempts = 1;					// how many times to look for wifi at setup
+// const uint8_t wifiAttempts = 1;					// how many times to look for wifi at setup
 const bool deepSleepEnabled = false;			// requires setup() after wakeup
 //const long init_wifiOnUntil = -1; // 0 disables , -1 on forever
 //------------------

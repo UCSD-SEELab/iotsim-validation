@@ -117,7 +117,7 @@ retained union BinMsgBuffer_t MsgBuffer;
 // ----------------
 bool temporarlyDisableSleep = false;
 bool usbPassthrough = false;
-int scheduledSetupCommand = 0;
+//int scheduledSetupCommand = 0;
 //bool wkupPinEnabled = false;
 
 STARTUP(WiFi.selectAntenna(ANT_INTERNAL));
@@ -145,12 +145,12 @@ char buf[MAX_MSG_LEN+1];
 void mqttCallback(char* topic, byte* payload, unsigned int length) {
 	INO_TRACE("Processing MQTT message: %s\r\n", topic);
 	strncpy(buf, (const char*)payload, MAX_MSG_LEN);
-	connector.receiveMessageWiFi(buf);
+	//connector.receiveMessageWiFi(buf);
 }
 
 
 // Cloud functions must return int and take one String
-int processMsg(String extra) {
+/*int processMsg(String extra) {
 	INO_TRACE("Processing cloud command: %s\r\n", extra.c_str());
 	//StringStream stream(extra);
 	//InCmdMessage msg(stream, 100L);
@@ -158,13 +158,13 @@ int processMsg(String extra) {
 	connector.receiveMessageWiFi(buf);
 	//connector.processCommand(msg);
   return 0;
-}
+}*/
 
-void button_clicked(system_event_t event, int param)
-{
-    int times = system_button_clicks(param);
-    connector.setup_button_clicked(times);
-}
+//void button_clicked(system_event_t event, int param)
+//{
+//    int times = system_button_clicks(param);
+//   connector.setup_button_clicked(times);
+//}
 
 Timer timer(30000, re_enable_sleep, true);
 void re_enable_sleep() {
@@ -210,7 +210,7 @@ void setup()
 	}
 
 	//Manage changing state using setup button
-	System.on(button_final_click, button_clicked);
+	//System.on(button_final_click, button_clicked);
 
 	//System.on(reset_pending, reset_pending_event);
 
@@ -230,56 +230,58 @@ void setup()
 	//Serial.blockOnOverrun(false); //To avoid blocking the sensor when logging
 	 															//stuff and the serial is not availabl
 
-	Serial1.begin(serialSpeed);		//Tx/Rx pins on photon
-	Serial1.println();		//Tx/Rx pins on photon
+	//Serial1.begin(serialSpeed);		//Tx/Rx pins on photon
+	//Serial1.println();		//Tx/Rx pins on photon
 
 	// -------------------------------------------------
 	//This enable us to temprarly disable the sleep mode
 	//when we reset the sensor using the reset button
 	//We assume this is when we need to configure the sensor
 	//and we want to be able to use the setup button for conifigs
-	if (System.resetReason() == RESET_REASON_PIN_RESET) {
-		temporarlyDisableSleep = true;
-		INO_TRACE("Disable sleep for 30 secs");
-		timer.start();
+	//if (System.resetReason() == RESET_REASON_PIN_RESET) {
+	//	temporarlyDisableSleep = true;
+	//	INO_TRACE("Disable sleep for 30 secs");
+	//	timer.start();
 		//ResetSequenceLen = 0;
-	}
+	//}
 	// -------------------------------------------------
 
 	sensor.begin();
+	SensorConfig.wifiEnabled = true;
+	SensorConfig.intervalTime = 1;
 	connector.begin();
 
-	if (SensorConfig.vocInstalled)
+	//if (SensorConfig.vocInstalled)
 		voc.begin();
-	if (SensorConfig.co2Installed)
+	//if (SensorConfig.co2Installed)
 		co2.begin();
 
-	PM.begin(&PowerState);
+	//PM.begin(&PowerState);
 
-	if (PM.isBatteryLow() && !PM.isChargingOrTrickling()){
+	//if (PM.isBatteryLow() && !PM.isChargingOrTrickling()){
 		//TODO for debug remove in production
-		PM.printPowerReport();
+	//	PM.printPowerReport();
 		//TODO end of debug stuff
-		INO_TRACE("---------Low battery in begin. Go down for sleep.---------");
+	//	INO_TRACE("---------Low battery in begin. Go down for sleep.---------");
 		//Sleep for 60 secs
-		System.sleep(SLEEP_MODE_DEEP, 60000);
-	}
+	//	System.sleep(SLEEP_MODE_DEEP, 60000);
+	//}
 
 	// If the reset was due to power issues
-	if (System.resetReason() == RESET_REASON_POWER_MANAGEMENT ||
-					 System.resetReason() == RESET_REASON_POWER_DOWN ||
-					 System.resetReason() == RESET_REASON_POWER_BROWNOUT) {
+	//if (System.resetReason() == RESET_REASON_POWER_MANAGEMENT ||
+	//				 System.resetReason() == RESET_REASON_POWER_DOWN ||
+	//				 System.resetReason() == RESET_REASON_POWER_BROWNOUT) {
 		//TODO: Maybe we need to do something if battery died to reset power module??
-		PM.printPowerReport();
+	//	PM.printPowerReport();
 		//TODO end of debug stuff
-		if (System.resetReason() == RESET_REASON_POWER_MANAGEMENT)
-			INO_TRACE("Recovered from reset with reason RESET_REASON_POWER_MANAGEMENT: %d\n", System.resetReason());
-		if (System.resetReason() == RESET_REASON_POWER_DOWN)
-			INO_TRACE("Recovered from reset with reason RESET_REASON_POWER_DOWN: %d\n", System.resetReason());
-		if (System.resetReason() == RESET_REASON_POWER_BROWNOUT)
-			INO_TRACE("Recovered from reset with reason RESET_REASON_POWER_BROWNOUT: %d\n", System.resetReason());
+	//	if (System.resetReason() == RESET_REASON_POWER_MANAGEMENT)
+	//		INO_TRACE("Recovered from reset with reason RESET_REASON_POWER_MANAGEMENT: %d\n", System.resetReason());
+	//	if (System.resetReason() == RESET_REASON_POWER_DOWN)
+	//		INO_TRACE("Recovered from reset with reason RESET_REASON_POWER_DOWN: %d\n", System.resetReason());
+	//	if (System.resetReason() == RESET_REASON_POWER_BROWNOUT)
+	//		INO_TRACE("Recovered from reset with reason RESET_REASON_POWER_BROWNOUT: %d\n", System.resetReason());
 		//PM.reset();
-	}
+	//}
 
 	//bool wkupPinEnabled = false;
 
@@ -289,7 +291,8 @@ void setup()
 
 void loop()
 {
-	digitalWrite(led1, HIGH);
+	digitalWrite(led1, !digitalRead(led1));
+
 	mqttClient.loop();
 	if (connector.updateReadings()){
 		INO_TRACE("---------Update Readings returned true.---------\n");
@@ -300,20 +303,20 @@ void loop()
 		// i.e. one of these functions should be included in the loop: PM.isBatteryLow(), PM.getFuelLevel(), isCharging(), ...*/
 
 		//PM.updateReadings must be called periodically
-		PM.updateReadings();
-		PM.printPowerReport();
-		if (PM.isBatteryLow() && !PM.isChargingOrTrickling()){
-			INO_TRACE("---------Low battery in loop. Go down for sleep.---------\n");
+		//PM.updateReadings();
+		//PM.printPowerReport();
+		//if (PM.isBatteryLow() && !PM.isChargingOrTrickling()){
+		//	INO_TRACE("---------Low battery in loop. Go down for sleep.---------\n");
 			//Sleep for 60 secs
-			System.sleep(SLEEP_MODE_DEEP, 60000);
-		}
+		//	System.sleep(SLEEP_MODE_DEEP, 60000);
+		//}
 	}
 	connector.processCommands();
 	//Make sure we diable the forced wakeup if the pin goes down
 	sensor.initWakeupPinStatus();
 }
 
-char usb_msg[MAX_MSG_LEN+1];
+/*char usb_msg[MAX_MSG_LEN+1];
 int usb_pos=0;
 void serialEvent()
 {
@@ -359,3 +362,4 @@ void serialEvent1()
 		}
 	}
 }
+*/

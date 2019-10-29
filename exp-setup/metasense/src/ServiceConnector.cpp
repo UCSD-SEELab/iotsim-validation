@@ -42,7 +42,7 @@ uint32_t g_bytes_received;
 const int g_port = 443;
 
 //https://zdwx46g3uj.execute-api.us-west-2.amazonaws.com/Prod
-const char host [] = "q229xyhbv1.execute-api.us-west-2.amazonaws.com";
+// const char host [] = "q229xyhbv1.execute-api.us-west-2.amazonaws.com";
 // unsigned char httpRequestContent[] = "POST %s HTTP/1.0\r\n"
 // 	"User-Agent: MatrixSSL/" MATRIXSSL_VERSION "\r\n"
 // 	"x-api-key: g114c8FUxn2LLcJy0LuuXM4VHemAVVj7o144zIZ5\r\n"
@@ -67,37 +67,43 @@ void ServiceConnector::begin()
 
 	// HTTPSClientEnabled = httpsClientSetup(host, msg_endpoint.c_str()) == 0;
 
-	serialBypass = false;
+	// serialBypass = false;
 
-	if (init)
-	{
+	//if (init)
+	//{
 		//do_sendConfig(sensor.getConfig(), false, true, false, false);
-		StaticJsonBuffer<MSG_JSON_BUF_MAX_LEN> jsonBuffer;
-		JsonObject& root = jsonBuffer.createObject();
-		root[msg_String_Flag_AFESerial] = SensorConfig.MACAddress;
-		root[msg_String_Flag_MAC] = SensorConfig.MACAddress;
-		char buffer[MSG_JSON_MAX_LEN];
-		root.printTo(buffer,sizeof(buffer));
-		logMessageToSD(buffer);
-	}
-  M_MQTT_TRACE("streamMQTT value %d\n\r", SensorConfig.streamMQTT)
-  if (SensorConfig.streamMQTT) {
-		M_MQTT_TRACE("Connecting to server")
+	//	StaticJsonBuffer<MSG_JSON_BUF_MAX_LEN> jsonBuffer;
+	//	JsonObject& root = jsonBuffer.createObject();
+	//	root[msg_String_Flag_AFESerial] = SensorConfig.MACAddress;
+	//	root[msg_String_Flag_MAC] = SensorConfig.MACAddress;
+	//	char buffer[MSG_JSON_MAX_LEN];
+	//	root.printTo(buffer,sizeof(buffer));
+	//	logMessageToSD(buffer);
+	//}
+  //M_MQTT_TRACE("streamMQTT value %d\n\r", SensorConfig.streamMQTT)
+  //if (SensorConfig.streamMQTT) {
+	//	M_MQTT_TRACE("Connecting to server")
 		// mqttClient.connect("Particle_" + System.deviceID(), MQTT_Server_Username, MQTT_Server_Password);
-		mqttClient.connect("Particle_" + System.deviceID());
-	}
+	//	mqttClient.connect("Particle_" + System.deviceID());
+	//}
 
-	#if (PLATFORM_ID == 6)
+	//#if (PLATFORM_ID == 6)
 	// Photon code here
-	if (sensor.isWiFiEnabled())
-		WiFi.connect(WIFI_CONNECT_SKIP_LISTEN);
-	#elif (PLATFORM_ID == 10)
+	//if (sensor.isWiFiEnabled()) {
+	WiFi.on();
+	WiFi.setCredentials(wifiSSID, wifiPassword);
+	WiFi.connect(WIFI_CONNECT_SKIP_LISTEN);
+	// block until connect to local router
+	for (; !WiFi.localIP(); Particle.process())
+		M_INFO("%s\r\n", WiFi.localIP());
+	
+	//#elif (PLATFORM_ID == 10)
 	//Electron or other Particle device code here
-	if (sensor.isWiFiEnabled())
-		Cellular.connect();
-	#endif
+	//if (sensor.isWiFiEnabled())
+	//	Cellular.connect();
+	//#endif
 }
-
+/*
 void visualConfirm(uint8_t red, uint8_t green, uint8_t blue, int times)
 {
 	RGB.control(true);
@@ -254,8 +260,8 @@ void configBLE(int bond_type)
 	delay(500);
 	SC_TRACE("AT_RESET Sent\r\n");
 	Serial1.begin(serialSpeed);
-}
-void ServiceConnector::execute_setup_command(int command)
+}*/
+/*void ServiceConnector::execute_setup_command(int command)
 {
 	SINGLE_THREADED_BLOCK() {
 		scheduledSetupCommand = 0;
@@ -287,13 +293,13 @@ void ServiceConnector::execute_setup_command(int command)
 		init = true;
 		System.reset();
 	}
-}
-void ServiceConnector::setup_button_clicked(int times)
+}*/
+/*void ServiceConnector::setup_button_clicked(int times)
 {
 	scheduledSetupCommand = times;
-}
+}*/
 
-void ServiceConnector::outMessage(const char* msg, Msg_Source_t dest)
+/*void ServiceConnector::outMessage(const char* msg, Msg_Source_t dest)
 {
 	if (dest==wifi)
 		outMsgToCloud(msg);
@@ -309,8 +315,8 @@ void ServiceConnector::ackMessage(const char* str, Msg_Source_t source)
 	const char* o_msg_str = o_msg.msgStringFlag(msgFieldVal_Ack, str);
 	SC_TRACE("Response: %s\r\n", o_msg_str);
 	outMessage(o_msg_str, source);
-}
-void ServiceConnector::processReadFlagBool(InCmdMessage* msg, const char* str, bool value, Msg_Source_t source)
+}*/
+/*void ServiceConnector::processReadFlagBool(InCmdMessage* msg, const char* str, bool value, Msg_Source_t source)
 {
 	if(msg->requestFlag(str)) {
 		SC_TRACE("Received request for %s\r\n", str);
@@ -495,8 +501,8 @@ void ServiceConnector::processInMessage(InCmdMessage* msg, Msg_Source_t source)
 	processFlagUChar(msg, msg_Int_Flag_MQTT_Reads_Format, (unsigned char*)&SensorConfig.messageEncodingMQTT, source);
 
 	//String s(sizeof(int));
-	//processReadFlagString(msg, msg_String_Flag_NodeID, s.c_str()/*System.deviceID()*/, source);
-	processReadFlagString(msg, msg_String_Flag_NodeID, System.deviceID(), source);
+	//processReadFlagString(msg, msg_String_Flag_NodeID, s.c_str()/*System.deviceID()*//*, source);
+/*	processReadFlagString(msg, msg_String_Flag_NodeID, System.deviceID(), source);
 	processReadFlagString(msg, msg_String_Flag_AFESerial, SensorConfig.AFESerial, source);
 	processReadFlagString(msg, msg_String_Flag_MAC, SensorConfig.MACAddress, source);
 
@@ -507,13 +513,13 @@ void ServiceConnector::processInMessage(InCmdMessage* msg, Msg_Source_t source)
 		SC_TRACE("Has time ts: %d\r\n", msg->getTime());
 		Time.setTime(msg->getTime());
 	}
-}
+}*/
 
-void ServiceConnector::receiveMessageUSB(char* str)
+/*void ServiceConnector::receiveMessageUSB(char* str)
 {
 	/*char buf[MAX_MSG_LEN+1];
 	strncpy(buf, str, MAX_MSG_LEN);*/
-	SC_TRACE("Received USB %s\r\n",str);
+/*	SC_TRACE("Received USB %s\r\n",str);
 	InCmdMessage msg(str);
 	processInMessage(&msg, usb);
 }
@@ -521,7 +527,7 @@ void ServiceConnector::receiveMessageBLE(char* str)
 {
 	/*char buf[MAX_MSG_LEN+1];
 	strncpy(buf, str, MAX_MSG_LEN);*/
-	SC_TRACE("Received BLE |%s|\r\n", str);
+/*	SC_TRACE("Received BLE |%s|\r\n", str);
 	InCmdMessage msg(str);
 	processInMessage(&msg, ble);
 	SC_TRACE("Done Processing BLE |%s|\r\n", str);
@@ -530,21 +536,24 @@ void ServiceConnector::receiveMessageWiFi(char* str)
 {
 	/*char buf[MAX_MSG_LEN+1];
 	strncpy(buf, str, MAX_MSG_LEN);*/
-	SC_TRACE("Received WiFi %s\r\n",str);
+/*	SC_TRACE("Received WiFi %s\r\n",str);
 	InCmdMessage msg(str);
 	processInMessage(&msg, wifi);
-}
+}*/
 
-#if (PLATFORM_ID == 6)
+//#if (PLATFORM_ID == 6)
 // Photon code here
 void ServiceConnector::applyWiFiStatus() {
-	if (sensor.isWiFiEnabled()) {
+	//if (sensor.isWiFiEnabled()) {
 		if (!WiFi.connecting() && !WiFi.ready()) {
 			SC_TRACE("Enabling wifi\r\n");
 			WiFi.on();
 			WiFi.connect(WIFI_CONNECT_SKIP_LISTEN);
+			// block until connect to local router
+			for (; !WiFi.localIP(); Particle.process())
+				M_INFO("%s\r\n", WiFi.localIP());
 		}
-		if (WiFi.ready() && Particle.connected() == false) {
+		/*if (WiFi.ready() && Particle.connected() == false) {
 			SC_TRACE("Connecting Particle Cloud\r\n");
 			Particle.connect();
 		}
@@ -552,13 +561,13 @@ void ServiceConnector::applyWiFiStatus() {
 			SC_TRACE("Particle.syncTime\r\n");
 			Particle.syncTime();
 			nextSyncTime = Time.now() + 3600 * 24;
-		}
-	} else if (WiFi.connecting() || WiFi.ready()) {
-		SC_TRACE("Turn off wifi\r\n");
-		WiFi.off();
-	}
+		}*/
+	//} else if (WiFi.connecting() || WiFi.ready()) {
+	//	SC_TRACE("Turn off wifi\r\n");
+	//	WiFi.off();
+	//}
 }
-#elif (PLATFORM_ID == 10)
+/*#elif (PLATFORM_ID == 10)
 //Electron or other Particle device code here
 void ServiceConnector::applyWiFiStatus() {
 	if (sensor.isWiFiEnabled()) {
@@ -581,32 +590,32 @@ void ServiceConnector::applyWiFiStatus() {
 		Cellular.off();
 	}
 }
-#endif
+#endif*/
 
 void ServiceConnector::processCommands()
 {
 	//Execute setup configurations scheduled by the setup button
-	if(scheduledSetupCommand>0) {
-		execute_setup_command(scheduledSetupCommand);
-	}
+	//if(scheduledSetupCommand>0) {
+	//	execute_setup_command(scheduledSetupCommand);
+	//}
 	sensor.checkWakeupPinStatus();
 
 	applyWiFiStatus();
 
 	//Do it only when the BLE controlled PIN is HIGH
-	long remaining_wait =
-				SensorConfig.intervalTime - (Time.now() - lastReadingTime);
+	//long remaining_wait =
+	//			SensorConfig.intervalTime - (Time.now() - lastReadingTime);
 
-	//Serial1.printlnf("remaining_wait %d", remaining_wait);
+	//M_INFO("remaining_wait %d", remaining_wait);
 
-	if (sensor.isSleepEnabled() && remaining_wait > 0) {
+	//if (sensor.isSleepEnabled() && remaining_wait > 0) {
 		//Serial1.printlnf("going to sleep for %d!",remaining_wait);
 		//if(sensor.isUSBSerialConnected())
 		//	Serial.flush();
-		Serial1.flush();
-		System.sleep(SLEEP_MODE_DEEP, remaining_wait);
+		// Serial1.flush();
+	//	System.sleep(SLEEP_MODE_DEEP, remaining_wait);
 		//System.sleep(A7, CHANGE, sleep_sec); //This will not reset the sensor but less power save
-	}
+	//}
 }
 
 bool ServiceConnector::updateReadings()
@@ -615,14 +624,14 @@ bool ServiceConnector::updateReadings()
 	// When we control the BLE serial module directly form the USB
 	// port we disable the reading of data... it is used just to configure
 	// or debug the BLE module, not while in use
-	if (serialBypass)
-		return false;
+	//if (serialBypass)
+	//	return false;
 
 	long nowTime = Time.now();
 	long waited = nowTime - lastReadingTime;
 
-	if (waited>=0 && waited<=SensorConfig.intervalTime)
-		return false;
+	//if (waited>=0 && waited<=SensorConfig.intervalTime)
+	//	return false;
 	//Reinitialize the reading time for a new sample
 	//We use second precision that is supported by the real time clock
 	lastReadingTime = nowTime; //original was using millis();
@@ -741,10 +750,12 @@ void ServiceConnector::processReadings() {
 			//Create the json message
 			char* msg =  _nn.Loop(timestamp, N_IN, inputs);
 
-			M_MQTT_TRACE("outMsgToMQTT: isWiFiEnabled %d, updatesPending %d, MQTTClientEnabled %d\r\n",
-					sensor.isWiFiEnabled(), System.updatesPending(), MQTTClientEnabled);
+			//M_MQTT_TRACE("outMsgToMQTT: isWiFiEnabled %d, updatesPending %d, MQTTClientEnabled %d\r\n",
+			//		sensor.isWiFiEnabled(), System.updatesPending(), MQTTClientEnabled);
 			//if (sensor.isWiFiEnabled() && Particle.connected() && !System.updatesPending()
 			//		&& MQTTClientEnabled) {
+			// Serial.println(WiFi.localIP());
+				M_INFO("%s\r\n", WiFi.localIP());
 				M_MQTT_TRACE("Publishing MSG to MQTT: %s\r\n", msg);
 				if (!mqttClient.isConnected()) {
 					M_MQTT_TRACE("Not connected to MQTT... reconnecting\r\n");
@@ -759,21 +770,21 @@ void ServiceConnector::processReadings() {
 		}
 }
 
-void ServiceConnector::outMsgToCloud(const char* str) {
+/*void ServiceConnector::outMsgToCloud(const char* str) {
 	if (sensor.isWiFiEnabled() && Particle.connected() && !System.updatesPending()) {
 		SC_TRACE("Publishing MSG to cloud: %s\r\n", str);
 		Particle.publish("MSG", str, PRIVATE | WITH_ACK);
 	}
-}
+}*/
 
-void ServiceConnector::outBMsgToCloud(const char* str) {
+/*void ServiceConnector::outBMsgToCloud(const char* str) {
 	if (sensor.isWiFiEnabled() && Particle.connected() && !System.updatesPending()) {
 		SC_TRACE("Publishing MSG to cloud: %s\r\n", str);
 		Particle.publish("BMSG", str, PRIVATE | WITH_ACK);
 	}
-}
+}*/
 
-void ServiceConnector::outMsgToMQTT(const char* msg) {
+/*void ServiceConnector::outMsgToMQTT(const char* msg) {
 	M_MQTT_TRACE("outMsgToMQTT: isWiFiEnabled %d, updatesPending %d, MQTTClientEnabled %d\r\n",
 			sensor.isWiFiEnabled(), System.updatesPending(), MQTTClientEnabled);
 	if (sensor.isWiFiEnabled() && Particle.connected() && !System.updatesPending()
@@ -789,9 +800,9 @@ void ServiceConnector::outMsgToMQTT(const char* msg) {
 			mqttClient.publish("MetaSense/msgjson", msg);
     }
 	}
-}
+}*/
 
-void ServiceConnector::outB64MsgToMQTT(const char* msg) {
+/*void ServiceConnector::outB64MsgToMQTT(const char* msg) {
 	M_MQTT_TRACE("outB64MsgToMQTT: isWiFiEnabled %d, updatesPending %d, MQTTClientEnabled %d\r\n",
 			sensor.isWiFiEnabled(), System.updatesPending(), MQTTClientEnabled);
 	if (sensor.isWiFiEnabled() && !System.updatesPending()
@@ -807,9 +818,9 @@ void ServiceConnector::outB64MsgToMQTT(const char* msg) {
 			mqttClient.publish("MetaSense/msgb64", msg);
     }
 	}
-}
+}*/
 
-void ServiceConnector::outBMsgToMQTT(const uint8_t* msg, unsigned int len) {
+/*void ServiceConnector::outBMsgToMQTT(const uint8_t* msg, unsigned int len) {
 	M_MQTT_TRACE("outBMsgToMQTT: isWiFiEnabled %d, updatesPending %d, MQTTClientEnabled %d\r\n",
 			sensor.isWiFiEnabled(), System.updatesPending(), MQTTClientEnabled);
 	if (sensor.isWiFiEnabled() && Particle.connected() && !System.updatesPending()
@@ -825,16 +836,16 @@ void ServiceConnector::outBMsgToMQTT(const uint8_t* msg, unsigned int len) {
 			mqttClient.publish("MetaSense/msgbin", msg, len);
     }
 	}
-}
+}*/
 
-void ServiceConnector::uploadMsg(byte msg[], int binBufLen, const char* endpoint) {
+/*void ServiceConnector::uploadMsg(byte msg[], int binBufLen, const char* endpoint) {
   if (sensor.isWiFiEnabled() && Particle.connected() &&
 		!System.updatesPending() && MQTTClientEnabled) {
 			//TODO: fix uploadMsg using MQTT
 	}
-}
+}*/
 
-void ServiceConnector::do_streamAll(uint32_t timestamp,
+/*void ServiceConnector::do_streamAll(uint32_t timestamp,
 	AFE::Gas_Raw_t& gas, Sensor::Reading_Raw_t& bar_hum,
 	AFE::Gas_Model_t& model,
 	VOC::VOC_Raw_t& vocRaw, VOC::VOC_Model_t& vocModel,
@@ -999,7 +1010,7 @@ void ServiceConnector::doSendBatchToCloud(uint8_t *in, size_t input_size, bool s
         }
         HSE_poll_res pres;
         do {                    /* "turn the crank" */
-            pres = heatshrink_encoder_poll(&hse, &out[polled], comp_sz - polled, &count);
+/*            pres = heatshrink_encoder_poll(&hse, &out[polled], comp_sz - polled, &count);
             polled += count;
             SC_TRACE("^^ sunk %d\r\n", count);
         } while (pres == HSER_POLL_MORE);
@@ -1009,7 +1020,7 @@ void ServiceConnector::doSendBatchToCloud(uint8_t *in, size_t input_size, bool s
 		// if (cmp_status != MZ_OK)
   	// 	SC_TRACE("Internal error - compression failed: %d\r\n", cmp_status);
 	  /* check for an incompressible block */
-	  if (polled >= input_size)
+/*	  if (polled >= input_size)
 			SC_TRACE("This block contains incompressible data.\r\n");
 		SC_TRACE("Compression rate %f.\r\n", (float)polled / (float)input_size);
 		inputLen = polled;
@@ -1063,8 +1074,8 @@ void ServiceConnector::doSendBatchToCloud(uint8_t *in, size_t input_size, bool s
 		}
 		free(string);
 	}
-}
-void ServiceConnector::logMessageToSD(const char* msg) {
+} */
+/*void ServiceConnector::logMessageToSD(const char* msg) {
 	sensor.selectSPI(Sensor::SDCARD);
 
 	SC_TRACE("sensor.logFile: %d\r\n", (int)sensor.logFile);
@@ -1078,7 +1089,7 @@ void ServiceConnector::logMessageToSD(const char* msg) {
 		bool reInitResult = initCardResult && initVolumeResult && initRootResult;
 		M_TRACE("initCardResult %d, initVolumeResult %d, initRootResult %d, reInitResult: %d",
 			initCardResult, initVolumeResult, initRootResult, reInitResult);*/
-		bool reInitResult = SD.begin(SDCSPin);
+/*		bool reInitResult = SD.begin(SDCSPin);
 		if (reInitResult) {
 			SC_TRACE("Open file again\r\n");
 			sensor.logFile = SD.open(sensor.filename, FILE_WRITE);
@@ -1108,7 +1119,7 @@ void ServiceConnector::logMessageToSD(const char* msg) {
 		SC_TRACE(" to file and flush done\r\n");
 	}
 	sensor.selectSPI(Sensor::NONE);
-}
+}*/
 
 /*void ServiceConnector::do_sendConfig(SensorEEPROMConfig_t* configuration, bool wifi, bool sd, bool ble, bool usb) {
 	OutMessage msg = OutMessage(Time.now());
