@@ -132,9 +132,9 @@ void setup()
 {
 	pinMode(led1, OUTPUT);
 	// specify local computation workload
-	connector.LocalProcess = run_lr;
-	connector._lr.lr_in_size = LR_IN;
-	connector._lr.lr_out_size = LR_OUT;
+	connector.LocalProcess = run_none;
+	// connector._lr.lr_in_size = LR_IN;
+	// connector._lr.lr_out_size = LR_OUT;
 	// set Sensor Config
 	SensorConfig.wifiEnabled = true;
 	SensorConfig.sleepEnabled = false;

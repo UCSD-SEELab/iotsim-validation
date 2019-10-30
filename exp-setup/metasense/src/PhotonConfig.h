@@ -48,7 +48,7 @@
 #define INTERVAL_MS 200
 
 typedef enum { json, binB64, bin } MessageEncodingType_t;
-typedef enum { none, run_nn, run_lr } RunLocalProcess_t; // used in connector
+typedef enum { run_none, run_nn, run_lr } RunLocalProcess_t; // used in connector
 
 typedef struct {
 	bool wifiEnabled;
