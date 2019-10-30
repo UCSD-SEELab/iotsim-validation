@@ -47,6 +47,7 @@
 //#define MQTT_Server_Username "admin"
 //#define MQTT_Server_Password "SamsungProject"
 #define MQTT_Streaming_Default_Format json;
+#define INTERVAL_MS 200
 
 typedef enum { json, binB64, bin } MessageEncodingType_t;
 

@@ -131,6 +131,11 @@ void setup()
 	//TODO: Experimental features to enable
 	connector.MQTTClientEnabled = Experimental_MQTTClientEnabled;
 	connector.RunNeuralNet = Experimental_RunNeuralNet;
+	SensorConfig.wifiEnabled = true;
+	SensorConfig.sleepEnabled = false;
+	SensorConfig.vocInstalled = false;
+	SensorConfig.co2Installed = false;
+	SensorConfig.intervalTime = INTERVAL_MS;
 
 	if (init)
 	{
