@@ -28,10 +28,10 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-// NeuralNetwork.h
+// LinearRegression.h
 
-#ifndef _NEURALNETWORK_h
-#define _NEURALNETWORK_h
+#ifndef _LINEARREGRESSION_h
+#define _LINEARREGRESSION_h
 
 #include "application.h"
 //#include <stdarg.h>
@@ -42,26 +42,19 @@
 #define MSG_JSON_MAX_LEN 200
 #define MSG_JSON_BUF_MAX_LEN 800
 
-class NeuralNetwork {
+class LinearRegression {
 public:
   // nodes for neural networks
-  float nn_in[BATCH_LEN][N_IN], nn_out[BATCH_LEN][N_OUT]; // input and output nodes
-  float nn_l1[BATCH_LEN][N_1]; // middle layer nodes in nn
+  float lr_out[LR_OUT]; // input and output nodes
+  int lr_in_size, lr_out_size;
 
-
-  NeuralNetwork();
-  char* Loop(unsigned long timestamp, int count, float args[]);
-  char* json(unsigned long timestamp, float *out, int out_row, int out_col);
+  LinearRegression();
+  char* Run(unsigned long timestamp, float lr_in[]);
+  char* json(unsigned long timestamp, float *out, int out_size);
 private:
   char buffer[MSG_JSON_MAX_LEN];
-  template<int ROW_M, int COL_M>
-  void ReLU(float x[ROW_M][COL_M]);
-  template<int ROW_M1, int COL_M1, int ROW_M2, int COL_M2, int ROW_M_OUT, int COL_M_OUT>
-  void matrix_multiply(float firstMatrix[ROW_M1][COL_M1], float secondMatrix[ROW_M2][COL_M2], float outputMatrix[ROW_M_OUT][COL_M_OUT]);
-  template<int ROW_M, int COL_M>
-  void matrix_sum(float m[ROW_M][COL_M], float v[COL_M]);
-  template<int ROW_M1, int COL_M1, int ROW_M_OUT, int COL_M_OUT>
-  void nn(float inputMatrix[ROW_M1][COL_M1], float outputMatrix[ROW_M_OUT][COL_M_OUT]);
+  float weights[LR_IN][LR_OUT];
+  void GenerateWeight_random();
 };
 
 #endif

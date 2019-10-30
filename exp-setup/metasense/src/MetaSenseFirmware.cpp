@@ -66,6 +66,7 @@ PRODUCT_VERSION(9);
 #include "Sensor.h"
 #include "ServiceConnector.h"
 #include "logger.h"
+#include "shape.h"
 
 //Variables retined when in DEEP SLEEP
 //retained unsigned long samplingInterval = 5000;
@@ -106,10 +107,12 @@ Sensor sensor(HumSckPin, HumDataPin, BarCSPin, SDCSPin, UNCONNECTED_CS_PIN, ADS1
 VOC voc(ADS1115_ADDRESS_0);
 CO2 co2;
 NeuralNetwork nn;
+LinearRegression lr;
+
 void mqttCallback(char* topic, byte* payload, unsigned int length);
 MQTT mqttClient(MQTT_Server_Address, MQTT_Server_Port, mqttCallback, MAX_MSG_LEN);
 
-ServiceConnector connector(sensor, voc, co2, mqttClient, nn);
+ServiceConnector connector(sensor, voc, co2, mqttClient, nn, lr);
 
 char buf[MAX_MSG_LEN+1];
 void mqttCallback(char* topic, byte* payload, unsigned int length) {
@@ -128,9 +131,11 @@ void re_enable_sleep() {
 void setup()
 {
 	pinMode(led1, OUTPUT);
-	//TODO: Experimental features to enable
-	connector.MQTTClientEnabled = Experimental_MQTTClientEnabled;
-	connector.RunNeuralNet = Experimental_RunNeuralNet;
+	// specify local computation workload
+	connector.LocalProcess = run_lr;
+	connector._lr.lr_in_size = LR_IN;
+	connector._lr.lr_out_size = LR_OUT;
+	// set Sensor Config
 	SensorConfig.wifiEnabled = true;
 	SensorConfig.sleepEnabled = false;
 	SensorConfig.vocInstalled = false;
@@ -160,8 +165,10 @@ void setup()
 
 	sensor.begin();
 	connector.begin();
-	voc.begin();
-	co2.begin();
+	if (SensorConfig.vocInstalled)
+		voc.begin();
+	if (SensorConfig.co2Installed)
+		co2.begin();
 
 	init = false;
 }
@@ -177,5 +184,5 @@ void loop()
 	}
 	connector.applyWiFiStatus();
 	//Make sure we disable the forced wakeup if the pin goes down
-	sensor.initWakeupPinStatus();
+	//sensor.initWakeupPinStatus();
 }

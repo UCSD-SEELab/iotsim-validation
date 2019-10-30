@@ -34,4 +34,6 @@
 #define N_OUT 2
 #define BATCH_LEN 1
 #define N_1 64
+#define LR_IN 18
+#define LR_OUT 10
 #endif

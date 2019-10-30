@@ -31,10 +31,11 @@
 #include "ServiceConnector.h"
 SdFat SD;
 
-ServiceConnector::ServiceConnector(Sensor& _sensor ,
-	VOC& _voc, CO2& _co2, MQTT& mqtt, NeuralNetwork& nn) :
+ServiceConnector::ServiceConnector(Sensor& _sensor,
+	VOC& _voc, CO2& _co2, MQTT& mqtt, NeuralNetwork& nn,
+	LinearRegression& lr) :
 	sensor(_sensor), voc(_voc), co2(_co2), mqttClient(mqtt),
-	_nn(nn)
+	_nn(nn), _lr(lr)
 {
 //
 }
@@ -174,13 +175,15 @@ void ServiceConnector::processReadings() {
 	float inputs[N_IN];
 	ComputeNeuralNetworkInputs(inputs);
 
-	// if run NN, compute the output
-	// otherwise, stream all data to msg
+	// run nn, lr or nothing, according to LocalProcess
 	char * msg;
-	if(RunNeuralNet) {
+	if (LocalProcess == run_nn) {
 		M_MQTT_TRACE("Running NeuralNetwork loop\r\n");
-		//Create the json message
 		msg =  _nn.Loop(lastReadingTime, N_IN, inputs);
+	}
+	else if (LocalProcess == run_lr) {
+		M_MQTT_TRACE("Running LinearRegression\r\n");
+		msg =  _lr.Run(lastReadingTime, inputs);
 	}
 	else {
 		msg = _nn.json(lastReadingTime, (float *)inputs, BATCH_LEN, N_IN);

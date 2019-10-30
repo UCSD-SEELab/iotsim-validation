@@ -38,8 +38,6 @@
 #define BOARD_VERSION 2.2
 #define MAX_MSG_LEN 350
 
-#define Experimental_MQTTClientEnabled true
-#define Experimental_RunNeuralNet true
 #define MQTT_Server_Address "192.168.1.57"
 #define MQTT_Server_Port 61613
 #define MQTT_Client_ID "photon"
@@ -50,6 +48,7 @@
 #define INTERVAL_MS 200
 
 typedef enum { json, binB64, bin } MessageEncodingType_t;
+typedef enum { none, run_nn, run_lr } RunLocalProcess_t; // used in connector
 
 typedef struct {
 	bool wifiEnabled;

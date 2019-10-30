@@ -28,40 +28,53 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-// NeuralNetwork.h
+#include "LinearRegression.h"
 
-#ifndef _NEURALNETWORK_h
-#define _NEURALNETWORK_h
+/*
+ * constructor
+ */
+LinearRegression::LinearRegression() {
+	GenerateWeight_random();
+}
 
-#include "application.h"
-//#include <stdarg.h>
-#include "ArduinoJson.h"
-#include "logger.h"
-#include "shape.h"
+/*
+ * pack: pack out to batch_data.
+ */
+char* LinearRegression::json(unsigned long timestamp, float *out, int out_size) {
+  	StaticJsonBuffer<MSG_JSON_BUF_MAX_LEN> jsonBuffer;
+	JsonObject& root = jsonBuffer.createObject();
+	root["timestamp"] = timestamp;
+  	JsonArray& array = root.createNestedArray("data");
+    JsonArray& innerArray = jsonBuffer.createArray();
+	for (int j = 0; j < out_size; ++j)
+		innerArray.add(out[j]);
+	array.add(innerArray);
+  	root.printTo(buffer,sizeof(buffer));
+  	return buffer;
+}
 
-#define MSG_JSON_MAX_LEN 200
-#define MSG_JSON_BUF_MAX_LEN 800
+/*
+ * Run Linear Regression
+ */
+char* LinearRegression::Run(unsigned long timestamp, float lr_in[]) {
+	if (lr_in_size > LR_IN || lr_out_size > LR_OUT)
+		return NULL;
+	// set lr_out array to zero
+	memset(lr_out, 0, sizeof(lr_out));
+  	// Run Linear Regression
+  	for (int i = 0; i < lr_in_size; ++i)
+  		for (int j = 0; j < lr_out_size; ++j)
+  			lr_out[j] += lr_in[i] * weights[i][j];
+  
+  	// pack the result into send batch
+	return json(timestamp, (float *)lr_out, lr_out_size);
+}
 
-class NeuralNetwork {
-public:
-  // nodes for neural networks
-  float nn_in[BATCH_LEN][N_IN], nn_out[BATCH_LEN][N_OUT]; // input and output nodes
-  float nn_l1[BATCH_LEN][N_1]; // middle layer nodes in nn
-
-
-  NeuralNetwork();
-  char* Loop(unsigned long timestamp, int count, float args[]);
-  char* json(unsigned long timestamp, float *out, int out_row, int out_col);
-private:
-  char buffer[MSG_JSON_MAX_LEN];
-  template<int ROW_M, int COL_M>
-  void ReLU(float x[ROW_M][COL_M]);
-  template<int ROW_M1, int COL_M1, int ROW_M2, int COL_M2, int ROW_M_OUT, int COL_M_OUT>
-  void matrix_multiply(float firstMatrix[ROW_M1][COL_M1], float secondMatrix[ROW_M2][COL_M2], float outputMatrix[ROW_M_OUT][COL_M_OUT]);
-  template<int ROW_M, int COL_M>
-  void matrix_sum(float m[ROW_M][COL_M], float v[COL_M]);
-  template<int ROW_M1, int COL_M1, int ROW_M_OUT, int COL_M_OUT>
-  void nn(float inputMatrix[ROW_M1][COL_M1], float outputMatrix[ROW_M_OUT][COL_M_OUT]);
-};
-
-#endif
+/*
+ * Randomly generate weights
+ */
+void LinearRegression::GenerateWeight_random() {
+	for (int i = 0; i < LR_IN; ++i)
+		for (int j = 0; j < LR_OUT; ++j)
+			weights[i][j] = float(random(10000))/10000;
+}

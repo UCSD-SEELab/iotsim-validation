@@ -42,6 +42,7 @@
 #include "PhotonConfig.h"
 #include "MQTT.h"
 #include "NeuralNetwork.h"
+#include "LinearRegression.h"
 #include "distributions.h"
 #include <math.h>
 
@@ -63,15 +64,16 @@ typedef struct {
 class ServiceConnector
 {
   public:
-    typedef enum {usb, ble, wifi} Msg_Source_t;
-    ServiceConnector(Sensor& sensor, VOC& voc, CO2& co2, MQTT& mqtt, NeuralNetwork& nn);
-	bool MQTTClientEnabled;
-	bool RunNeuralNet;
+    ServiceConnector(Sensor& sensor, VOC& voc, CO2& co2, MQTT& mqtt, 
+        NeuralNetwork& nn, LinearRegression& lr);
+	RunLocalProcess_t LocalProcess; 
     void begin();
     void processCommands();
     bool updateReadings();
     void processReadings();
     void applyWiFiStatus();
+
+    LinearRegression& _lr;
 
   private:
 	Readings_History_t ReadingsHistory[READINGS_HISTORY_SIZE];
