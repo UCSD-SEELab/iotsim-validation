@@ -1,6 +1,6 @@
 # Setup Photon-based MetaSense
 
-## Setup Photon
+This firmware is for MetaSense developed by UCSD SeeLab. On the board, there are all kinds of sensors: temperature, humidity, barometer, VOC, CO2, CO, OX, NO2. Check the [paper](http://seelab.ucsd.edu/papers/spie17.pdf) for more details.
 
 ### Background - Device Modes
 
