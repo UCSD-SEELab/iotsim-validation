@@ -65,8 +65,8 @@ class ServiceConnector
   public:
     typedef enum {usb, ble, wifi} Msg_Source_t;
     ServiceConnector(Sensor& sensor, VOC& voc, CO2& co2, MQTT& mqtt, NeuralNetwork& nn);
-		bool MQTTClientEnabled;
-		bool RunNeuralNet;
+	bool MQTTClientEnabled;
+	bool RunNeuralNet;
     void begin();
     void processCommands();
     bool updateReadings();

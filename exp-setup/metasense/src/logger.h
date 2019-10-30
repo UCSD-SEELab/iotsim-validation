@@ -48,7 +48,7 @@ int freeRam();
 #define PM_TRACE(...) M_LOGGER_TO_SERIAL(__VA_ARGS__)
 #define SC_TRACE(...) M_LOGGER_TO_SERIAL(__VA_ARGS__)
 #define MSG_TRACE(...) M_LOGGER_TO_SERIAL(__VA_ARGS__)
-#define M_TRACE(...) M_LOGGER_TO_SERIAL(__VA_ARGS__)
+#define M_TRACE(...) // M_LOGGER_TO_SERIAL(__VA_ARGS__)
 #define M_DEBUG(...) M_LOGGER_TO_SERIAL(__VA_ARGS__)
 #define M_INFO(...) M_LOGGER_TO_SERIAL(__VA_ARGS__)
 #define M_ERROR(...) M_LOGGER_TO_SERIAL(__VA_ARGS__)

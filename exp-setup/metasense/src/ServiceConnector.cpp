@@ -62,7 +62,10 @@ bool ServiceConnector::updateReadings()
 {
 	sensor.checkWakeupPinStatus();
 
-	long nowTime = Time.now();
+	unsigned long nowTime = millis();
+	unsigned long waited = nowTime - lastReadingTime;
+	if (waited>=0 && waited<=SensorConfig.intervalTime)
+		return false;
 	
 	//Reinitialize the reading time for a new sample
 	//We use second precision that is supported by the real time clock
@@ -153,37 +156,44 @@ void ServiceConnector::ComputeNeuralNetworkInputs(float inputs[]) {
 
 void ServiceConnector::processReadings() {
 	//Convert and send as needed by the streaming mode
-	uint32_t timestamp = Time.now();
+	// uint32_t timestamp = Time.now();
+	//Get the history buffer (it's circular right now size 3)
+	Readings_History_t* currentHistory = UpdateHistory();
+	//Update the values of the buffer with current readings
+	currentHistory->CO2 = co2.lastReading.val;
+	currentHistory-> S1A = convertRawGasToVoltage(sensor.afe.lastReading.range, sensor.afe.lastReading.ADC0_0);
+	currentHistory-> S1W = convertRawGasToVoltage(sensor.afe.lastReading.range, sensor.afe.lastReading.ADC0_1);
+	currentHistory-> S2A = convertRawGasToVoltage(sensor.afe.lastReading.range, sensor.afe.lastReading.ADC1_2);
+	currentHistory-> S2W = convertRawGasToVoltage(sensor.afe.lastReading.range, sensor.afe.lastReading.ADC1_3);
+	currentHistory-> S3A = convertRawGasToVoltage(sensor.afe.lastReading.range, sensor.afe.lastReading.ADC1_0);
+	currentHistory-> S3W = convertRawGasToVoltage(sensor.afe.lastReading.range, sensor.afe.lastReading.ADC1_1);
+	currentHistory-> humidity=sensor.lastReading.hum_H / 100.0;
+	currentHistory-> pressure=sensor.lastReading.bar_P / 10.0;
+	currentHistory-> temperature=sensor.lastReading.bar_T  / 10.0;
+	//Create the nn input processing the history buffer (it's currently size 20)
+	float inputs[N_IN];
+	ComputeNeuralNetworkInputs(inputs);
+
+	// if run NN, compute the output
+	// otherwise, stream all data to msg
+	char * msg;
 	if(RunNeuralNet) {
 		M_MQTT_TRACE("Running NeuralNetwork loop\r\n");
-		//Get the history buffer (it's circular right now size 3)
-		Readings_History_t* currentHistory = UpdateHistory();
-		//Update the values of the buffer with current readings
-		currentHistory->CO2 = co2.lastReading.val;
-		currentHistory-> S1A = convertRawGasToVoltage(sensor.afe.lastReading.range, sensor.afe.lastReading.ADC0_0);
-		currentHistory-> S1W = convertRawGasToVoltage(sensor.afe.lastReading.range, sensor.afe.lastReading.ADC0_1);
-		currentHistory-> S2A = convertRawGasToVoltage(sensor.afe.lastReading.range, sensor.afe.lastReading.ADC1_2);
-		currentHistory-> S2W = convertRawGasToVoltage(sensor.afe.lastReading.range, sensor.afe.lastReading.ADC1_3);
-		currentHistory-> S3A = convertRawGasToVoltage(sensor.afe.lastReading.range, sensor.afe.lastReading.ADC1_0);
-		currentHistory-> S3W = convertRawGasToVoltage(sensor.afe.lastReading.range, sensor.afe.lastReading.ADC1_1);
-		currentHistory-> humidity=sensor.lastReading.hum_H / 100.0;
-		currentHistory-> pressure=sensor.lastReading.bar_P / 10.0;
-		currentHistory-> temperature=sensor.lastReading.bar_T  / 10.0;
-		//Create the nn input processing the history buffer (it's currently size 20)
-		float inputs[N_IN];
-		ComputeNeuralNetworkInputs(inputs);
 		//Create the json message
-		char* msg =  _nn.Loop(timestamp, N_IN, inputs);
-
-		M_MQTT_TRACE("Publishing MSG to MQTT: %s\r\n", msg);
-		if (!mqttClient.isConnected()) {
-			M_MQTT_TRACE("Not connected to MQTT... reconnecting\r\n");
-			//mqttClient.connect("Particle_" + System.deviceID(), MQTT_Server_Username, MQTT_Server_Password);
-			mqttClient.connect("Particle_" + System.deviceID());
-		}
-		if (mqttClient.isConnected()) {
-			M_MQTT_TRACE("Client is connected... publish to MetaSense/nnjson\r\n");
-			mqttClient.publish("MetaSense/nnjson", msg);
-		}
+		msg =  _nn.Loop(lastReadingTime, N_IN, inputs);
+	}
+	else {
+		msg = _nn.json(lastReadingTime, (float *)inputs, BATCH_LEN, N_IN);
+	}
+	// publish msg using MQTT
+	M_MQTT_TRACE("Publishing MSG to MQTT: %s\r\n", msg);
+	if (!mqttClient.isConnected()) {
+		M_MQTT_TRACE("Not connected to MQTT... reconnecting\r\n");
+		//mqttClient.connect(MQTT_Client_ID, MQTT_Server_Username, MQTT_Server_Password);
+		mqttClient.connect(MQTT_Client_ID);
+	}
+	if (mqttClient.isConnected()) {
+		M_MQTT_TRACE("Client is connected... publish to %s\r\n", MQTT_Topic);
+		mqttClient.publish(MQTT_Topic, msg);
 	}
 }

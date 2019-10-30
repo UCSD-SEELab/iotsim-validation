@@ -51,7 +51,7 @@ public:
 
   NeuralNetwork();
   char* Loop(uint32_t timestamp, int count, float args[]);
-
+  char* json(uint32_t timestamp, float *out, int out_row, int out_col);
 private:
   char buffer[MSG_JSON_MAX_LEN];
   template<int ROW_M, int COL_M>
@@ -62,7 +62,6 @@ private:
   void matrix_sum(float m[ROW_M][COL_M], float v[COL_M]);
   template<int ROW_M1, int COL_M1, int ROW_M_OUT, int COL_M_OUT>
   void nn(float inputMatrix[ROW_M1][COL_M1], float outputMatrix[ROW_M_OUT][COL_M_OUT]);
-  char* json(uint32_t timestamp, float *out, int out_row, int out_col);
 };
 
 #endif

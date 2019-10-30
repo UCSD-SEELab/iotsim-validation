@@ -98,7 +98,7 @@ void NeuralNetwork::nn(float in[ROW_M1][COL_M1], float out[ROW_M_OUT][COL_M_OUT]
  * pack: pack out to batch_data.
  * out_col should equal to N_OUT as we read continuously!
  */
-char* NeuralNetwork::json(uint32_t timestamp, float *out, int out_row, int out_col) {
+char* NeuralNetwork::json(unsigned long timestamp, float *out, int out_row, int out_col) {
   StaticJsonBuffer<MSG_JSON_BUF_MAX_LEN> jsonBuffer;
 	JsonObject& root = jsonBuffer.createObject();
 	root["timestamp"] = timestamp;
@@ -150,22 +150,22 @@ NeuralNetwork::NeuralNetwork() {
 * Count must match the number of features times the batch length
 * the varialbes are listed as floats one batch after the other
 */
-char* NeuralNetwork::Loop(uint32_t timestamp, int count, float args[]) {
+char* NeuralNetwork::Loop(unsigned long timestamp, int count, float args[]) {
   if (count!=N_IN*BATCH_LEN) {
 		buffer[0] = 0;
 		return buffer;
 	}
 	int j;
-  M_MQTT_TRACE("Looping on params\r\n"); Serial.flush();
+  M_TRACE("Looping on params\r\n"); Serial.flush();
 	int k=0,z=0;
   for(j=0; j<count; j++){
-		M_MQTT_TRACE("Got param[%d]\r\n", j); Serial.flush();
+		M_TRACE("Got param[%d]\r\n", j); Serial.flush();
     nn_in[k][z++] = args[j];
 		if(z==N_IN){
 			z=0; k++;
 		}
   }
-	M_MQTT_TRACE("Closed param list\r\n");
+	M_TRACE("Closed param list\r\n");
   // compute nn for this input matrix
 	nn<BATCH_LEN, N_IN, BATCH_LEN, N_OUT>(nn_in, nn_out);
 	//nn((float *)nn_in, BATCH_LEN, N_IN, (float *)nn_out, BATCH_LEN, N_OUT);

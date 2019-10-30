@@ -43,6 +43,7 @@
 #define MQTT_Server_Address "192.168.1.57"
 #define MQTT_Server_Port 61613
 #define MQTT_Client_ID "photon"
+#define MQTT_Topic "photon/data"
 //#define MQTT_Server_Username "admin"
 //#define MQTT_Server_Password "SamsungProject"
 #define MQTT_Streaming_Default_Format json;
