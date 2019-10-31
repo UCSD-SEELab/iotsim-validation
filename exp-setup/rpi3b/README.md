@@ -82,15 +82,15 @@ Although we end up with using `scikit-learn` instead of Keras, the installation 
 1. Start the mosquitto broker
 
    ```shell
-   mosquitto -p 1884 -v
+   mosquitto -p 61613 -v
    ```
 
 2. Start the receiver client on Raspberry Pi 3B, specifying whether perform local processing:
 
-   Do local processing with a MLP with hidden layers (5,10):
+   Do local image processing with a MLP with hidden layers (5,10):
 
    ```shell
-   python3 mqtt.py -p -l 5 10
+   python3 mqtt.py -ip 1 -il 5 10
    ```
 
    Do not process locally. Instead, directly forward the image:
@@ -99,10 +99,10 @@ Although we end up with using `scikit-learn` instead of Keras, the installation 
    python3 mqtt.py
    ```
 
-3. Trigger the image publishing on Raspberry Pi zero. The image is set to a resolution of 128*128.
+3. Trigger the image publishing on Raspberry Pi zero. The image is set to a resolution of 1024*1024, with an interval of 0.5s.
 
    ```shell
-   python3 main.py 128 128 # in ./rpi0
+   python3 main.py 0.5 1024 1024 # in ./rpi0
    ```
 
    
