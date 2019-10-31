@@ -10,7 +10,7 @@ Date: 10/18/2019
 from picamera import PiCamera
 
 class myCamera():
-    def __init__(self, resolution=(128, 128)):
+    def __init__(self, resolution=(1024, 1024)):
         # init object and settings
         self.camera = PiCamera()
         self.camera.resolution = resolution

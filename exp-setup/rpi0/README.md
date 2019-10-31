@@ -17,8 +17,16 @@
    
 3. **To run the script in this folder**
 
-   After starting the mosquitto broker on localhost (i.e. on RPi 3B), set the IP address and port. Then run the following script to continuously take photos and send to broker.
+   After starting the mosquitto broker on localhost (i.e. on RPi 3B), set the IP address and port. Then run the following script to continuously take photos (every 500ms) and send to broker.
 
    ```shell
-   python3 main.py
+   python3 main.py 0.5
    ```
+   
+   If you want to control the resolution of the picture through command line, use the following one to take 1024*1024 images:
+   
+   ```shell
+   python3 main.py 0.5 128 128
+   ```
+   
+   **Note**: take one picture of 128*128 takes approximately 0.05s, while 1024\*1024 takes 0.3-0.4s.
