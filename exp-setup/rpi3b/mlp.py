@@ -49,7 +49,7 @@ def infer(img_path, hidden_layer):
     X = read_img(img_path)
     model_name = './models/{}-{}.sav'.format(X.shape, hidden_layer)
     if not os.path.exists(model_name):
-        raise Exception('No available model!')
+        raise Exception('No available model {}!'.format(model_name))
     clf = pickle.load(open(model_name, 'rb'))
     return clf.predict(X)
 

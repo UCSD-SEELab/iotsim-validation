@@ -25,19 +25,21 @@ MQTT_PORT = 61613
 def img_process(payload, *args):
     # process img locally with specified hidden layers
     # write down the image
-    hidden_layer = args[0]
+    hidden_layer = args
     img_path = './output.jpg'
     with open(img_path, 'wb') as f:
         f.write(payload)
         f.close()
 
     # process the image and publish the result
-    payload = infer(img_path, hidden_layer)
+    try:
+        payload = infer(img_path, hidden_layer)
+    except Exception as e:
+        print(e)
     payload = bytearray(payload)
     return payload
 
 def photon_process(payload, *args):
-    print(payload)
     payload = payload.decode('utf-8')
     payload = payload.split('[[')
     header = payload[0] # time stamp information
@@ -45,18 +47,17 @@ def photon_process(payload, *args):
     in_data = in_data.split(',')
     in_data = [float(d) for d in in_data] # extract the data in float
 
-    assert(photon_process.lr.in_size == in_data)
+    assert(photon_process.lr.in_size == len(in_data))
 
     out_data = photon_process.lr.run(in_data)
-    payload = header + str(out_data)
-    payload = bytearray(payload)
-    print(payload)
+    payload = header + str(out_data) + '}'
+    payload = payload.encode('utf-8')
 
     return payload
 
 
 class routine():
-    def __init__(self, sub_topic: str, pub_topic: str,
+    def __init__(self, sub_topic: str, pub_topic: str, \
                 process: bool, func: callable):
         self.sub_topic = sub_topic
         self.pub_topic = pub_topic
@@ -64,8 +65,8 @@ class routine():
         self.func = func
         self.args = None
 
-img_routine = routine('rpi0/img', 'rpi3b/img', False, None, img_process)
-photon_routine = routine('photon/data', 'rpi3b/photon', False, None, photon_process)
+img_routine = routine('rpi0/img', 'rpi3b/img', False, img_process)
+photon_routine = routine('photon/data', 'rpi3b/photon', False, photon_process)
 receive_routine = [img_routine, photon_routine]
 
 class myMQTTReceiver():
@@ -150,7 +151,8 @@ def main():
         pass
 
     # set LinearRegression
-    photon_process.lr = LinearRegression(photon_routine.args[0], \
+    if photon_routine.process:
+        photon_process.lr = LinearRegression(photon_routine.args[0], \
             photon_routine.args[1])
 
     # start MQTT client
