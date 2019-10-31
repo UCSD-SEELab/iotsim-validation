@@ -103,10 +103,10 @@ python3 mlp.py -m infer -l 5 2 -p output.jpg
 
 2. Start the receiver client on Raspberry Pi 3B, specifying whether perform local processing:
 
-   Do local image processing with a MLP with hidden layers (5,10):
+   Do local image processing with a MLP with hidden layers (5,10), run Linear Regression of 18 inputs and 10 outputs at the same time:
 
    ```shell
-   python3 mqtt.py -ip 1 -il 5 10
+   python3 mqtt.py -ip 1 -il 5 10 -pp 1 -pl 18 10
    ```
 
    Do not process locally. Instead, directly forward the image:

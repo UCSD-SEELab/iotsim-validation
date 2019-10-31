@@ -87,11 +87,11 @@ def main():
         hidden_layer = tuple(args.layer)
         train_model(args.path, hidden_layer)
     elif args.mode == 'infer':
-        print(infer('output.jpg', (5, 10)))
+        print(infer('output.jpg', tuple(args.layer)))
     else:
         raise Exception('This mode is not supported!')
 
-    print(MAC('./output.jpg', tuple([5, 10]), 1))
+    print(MAC('./output.jpg', tuple(args.layer), 1))
 
 
 if __name__=='__main__':
