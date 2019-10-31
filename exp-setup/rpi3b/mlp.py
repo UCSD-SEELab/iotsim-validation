@@ -59,11 +59,11 @@ def MAC(img_path, hidden_layer, output_size):
     '''
     X = read_img(img_path)
     # convert all the sizes to one list
-    input_size = len(X)
+    input_size = X.size
     l = [input_size]
     l.extend(list(hidden_layer))
     l.append(output_size)
-    # print(l)
+    print(l)
     mac = 0
     for i in range(len(l)-1):
         mac += l[i]*l[i+1]
