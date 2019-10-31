@@ -39,7 +39,7 @@
 #include "logger.h"
 #include "shape.h"
 
-#define MSG_JSON_MAX_LEN 200
+#define MSG_JSON_MAX_LEN 400
 #define MSG_JSON_BUF_MAX_LEN 800
 
 class NeuralNetwork {
