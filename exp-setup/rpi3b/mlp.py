@@ -9,7 +9,7 @@ To infer an image with (5,2) hidden layer on output.jpg:
     python3 mlp.py -m infer -l 5 2 -p ./output.jpg
 
 Author: Xiaofan Yu
-Data: 10/24/2019
+Date: 10/24/2019
 '''
 from sklearn.neural_network import MLPClassifier
 import matplotlib.pyplot as plt
