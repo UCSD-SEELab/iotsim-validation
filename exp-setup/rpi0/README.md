@@ -26,7 +26,7 @@
    If you want to control the resolution of the picture through command line, use the following one to take 1024*1024 images:
    
    ```shell
-   python3 main.py 0.5 128 128
+   python3 main.py 0.5 1024 1024
    ```
    
-   **Note**: take one picture of 128*128 takes approximately 0.05s, while 1024\*1024 takes 0.3-0.4s. The **default resolution** is 1024\*1024. 
+   **Note**: take one picture of 128*128 takes approximately 0.05s, while 1024\*1024 takes 0.3-0.4s. The **default resolution** is 512\*512. 

@@ -4,9 +4,9 @@
 Run MLP to process image on Raspberry Pi 3B.
 Work on Python 3.5.3 of Raspberry Pi 3B+.
 To train a model with (5,2) hidden layer on output.jpg:
-    python3 -m train -l 5 2 -p ./output.jpg
-To infer a image with (5,2) hidden layer on output.jpg:
-    python3 -m infer -l 5 2 -p ./output.jpg
+    python3 mlp.py -m train -l 5 2 -p ./output.jpg
+To infer an image with (5,2) hidden layer on output.jpg:
+    python3 mlp.py -m infer -l 5 2 -p ./output.jpg
 
 Author: Xiaofan Yu
 Data: 10/24/2019
@@ -38,7 +38,7 @@ def train_model(img_path, hidden_layer):
     clf = MLPClassifier(hidden_layer_sizes=hidden_layer)
     clf.fit(X, y)
     # save model
-    model_name = './models/{}.sav'.format(hidden_layer)
+    model_name = './models/{}-{}.sav'.format(X.shape, hidden_layer)
     pickle.dump(clf, open(model_name, 'wb'))
     print('Train model and save to {}'.format(model_name))
 
@@ -46,11 +46,11 @@ def infer(img_path, hidden_layer):
     '''
     Load model and infer the result incoming image.
     '''
-    model_name = './models/{}.sav'.format(hidden_layer)
+    X = read_img(img_path)
+    model_name = './models/{}-{}.sav'.format(X.shape, hidden_layer)
     if not os.path.exists(model_name):
         raise Exception('No available model!')
     clf = pickle.load(open(model_name, 'rb'))
-    X = read_img(img_path)
     return clf.predict(X)
 
 def MAC(img_path, hidden_layer, output_size):

@@ -18,12 +18,41 @@ import paho.mqtt.publish as publish
 import argparse
 from mlp import infer
 MQTT_SERVER = 'localhost'
-MQTT_PORT = 1884
+MQTT_PORT = 61613
+
+def img_process(payload, hidden_layer):
+    # process img locally with specified hidden layers
+    # write down the image
+    img_path = './output.jpg'
+    with open(img_path, 'wb') as f:
+        f.write(payload)
+        f.close()
+
+    # process the image and publish the result
+    payload = infer(img_path, hidden_layer)
+    payload = bytearray(payload)
+    return payload
+
+def photon_process(payload, input_output):
+    print(payload)
+    return payload
+
+
+class routine():
+    def __init__(self, sub_topic: str, pub_topic: str,
+                process: bool, layer: tuple, func: callable):
+        self.sub_topic = sub_topic
+        self.pub_topic = pub_topic
+        self.process = process
+        self.layer = layer
+        self.func = func
+
+img_routine = routine('rpi0/img', 'rpi3b/img', False, None, img_process)
+photon_routine = routine('photon/data', 'rpi3b/photon', False, None, photon_process)
+receive_routine = [img_routine, photon_routine]
 
 class myMQTTReceiver():
-    def __init__(self, server_ip=None, server_port=None, \
-            client_id='rpi3b', sub_topic=None, \
-            process=False, hidden_layer=None):
+    def __init__(self, server_ip=None, server_port=None, client_id='rpi3b'):
             '''
             Args:
                 server_ip, server_port: ip and port of broker
@@ -39,11 +68,7 @@ class myMQTTReceiver():
             self.client.on_connect = self.on_connect
             self.client.on_message = self.on_message
             self.client.connect(host=self.hostname, port=self.port)
-            self.sub_topic = sub_topic
-            self.process = process
-            self.hidden_layer = hidden_layer
             self.qos = 0
-            self.img_path = './output.jpg'
 
 
     # The callback for when the client receives a CONNACK response
@@ -52,49 +77,62 @@ class myMQTTReceiver():
         print("Connected with result code "+str(rc))
 
         # Subscribing in on_connect() means that if we lose the
-            # connection and reconnect then subscriptions will be renewed.
-            # Note that self.sub_topic can be a list
-        self.client.subscribe(self.sub_topic)
+        # connection and reconnect then subscriptions will be renewed.
+        for r in receive_routine:
+            self.client.subscribe(r.sub_topic)
+            print("Subscribe topic {}".format(r.sub_topic))
 
 
     def on_message(self, client, userdata, msg):
         # process for different topics
-        if msg.topic == 'rpi0/img':
-            print("Image Received")
-            # if no processing here, directly forward the data
-            if not self.process:
-                self.client.publish('rpi3b/img', msg.payload)
-            else:
-                # write down the image
-                with open(self.img_path, 'wb') as f:
-                    f.write(msg.payload)
-                    f.close()
-
-                # process the image and publish the result
-                payload = infer(self.img_path, self.hidden_layer)
-                payload = bytearray(payload)
-                self.client.publish('rpi3b/img', payload)
-            print("Image Published")
+        for r in receive_routine:
+            if msg.topic == r.sub_topic:
+                print('Message of topic {} received'.format(r.sub_topic))
+                if not r.process:
+                    # if no processing here, directly forward the data
+                    self.client.publish(r.pub_topic, msg.payload)
+                else:
+                    # perform local computation
+                    payload = r.func(msg.payload, r.layer)
+                    self.client.publish(r.pub_topic, payload)
+                print("Message of topic {} published".format(r.pub_topic))
+                return
 
 
 def main():
     # parse the parameters
     parser = argparse.ArgumentParser(description='Run MQTT client to receive \
-            image and process it locally if specified')
-    parser.add_argument('-p', '--process', type=bool, dest='process', \
-            default=False, help='Whether run local processing')
-    parser.add_argument('-l', '--layer', type=int, nargs='+', dest='layer', \
-            default=None, help='Specify the number of nodes in each hidden layer')
+            data and process it locally if specified')
+    parser.add_argument('-ip', '--imageprocess', type=bool, \
+            dest='imgprocess', \
+            default=False, \
+            help='Whether run local image processing')
+    parser.add_argument('-il', '--imagelayer', type=int, nargs='+', \
+            dest='imglayer', \
+            default=None, \
+            help='Specify the number of nodes in each hidden layer \
+                for MLP used in image processing')
+    parser.add_argument('-pp', '--photonprocess', type=bool, \
+            dest='photonprocess', \
+            default=False, \
+            help='Whether run local photon data processing')
+    parser.add_argument('-pl', '--photonlayer', type=int, nargs='+', \
+            dest='photonlayer', \
+            default=None, \
+            help='Specify the number of inputs and outputs \
+                for Linear Regression used in photon data processing')
 
     args = parser.parse_args()
-    print(args.process, args.layer)
-    if args.process:
-        args.layer = tuple(args.layer)
-
+    print(args.imgprocess, args.imglayer, args.photonprocess, args.photonlayer)
+    try:
+        img_routine.process = args.imgprocess
+        img_routine.layer = tuple(args.imglayer)
+        photon_routine.process = args.photonprocess
+        photon_routine.layer = tuple(args.photonlayer)
+    except:
+        pass
     # start MQTT client
-    mqttRev = myMQTTReceiver(server_ip=MQTT_SERVER, server_port=MQTT_PORT, \
-                sub_topic='rpi0/img', process=args.process, \
-                hidden_layer=args.layer)
+    mqttRev = myMQTTReceiver(server_ip=MQTT_SERVER, server_port=MQTT_PORT)
     mqttRev.client.loop_forever()
 
 if __name__ == '__main__':

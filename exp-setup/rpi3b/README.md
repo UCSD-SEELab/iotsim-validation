@@ -77,6 +77,22 @@ Although we end up with using `scikit-learn` instead of Keras, the installation 
    python3 keras_mnist.py
    ```
 
+## Preparation
+
+You need to train the MLP model for every input-hidden layer-output (fix to 1) combination.
+
+To train a model with (5,2) hidden layer on `output.jpg`:
+
+```shell
+python3 mlp.py -m train -l 5 2 -p output.jpg
+```
+
+To infer an image with the model obtained in the above training:
+
+```shell
+python3 mlp.py -m infer -l 5 2 -p output.jpg
+```
+
 ## Run Instructions
 
 1. Start the mosquitto broker
