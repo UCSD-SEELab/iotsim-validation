@@ -31,5 +31,5 @@ ip link set up dev bat0
 ifconfig bat0 $IP_ADDRESS
 
 # Start the tools for network visualization
-alfred -i bat0 -m -p 1 &
+# alfred -i bat0 -m -p 1 &
 batadv-vis -i bat0 -s &

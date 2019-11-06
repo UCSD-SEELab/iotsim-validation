@@ -7,9 +7,10 @@
 # Date: 11/5/2019
 
 apt install libnl-3-dev libnl-genl-3-dev
+apt install git
 
 # The tool for network visualization
-apt install alfred
+# apt install alfred
 
 if [ ! -f /home/pi/batctl ]; then
 	# directory does not exist, then install it

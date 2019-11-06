@@ -3,11 +3,11 @@
 1. Install `batman-dev` and `batctl`, configure network settings on RPi with the following commands:
 
    ```shell
-   sudo ./install.sh
-   sudo ./batsetup-rpi.sh 172.10.0.1/16
+   sudo ./install.sh # require internet connection
+   sudo ./batsetup-rpi.sh <ip>
    ```
 
-   Remember to set the desired IP on different devices in command line.
+   Replace <ip> with the desired IP you want to set for this device.
 
    **Trouble-shooting**
 
