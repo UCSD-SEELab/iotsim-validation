@@ -3,15 +3,15 @@
 1. Install `batman-dev` and `batctl`, configure network settings on RPi with the following commands:
 
    ```shell
-   sudo ./install.sh # require internet connection
-   sudo ./batsetup-rpi.sh <ip>
+   sudo bash ./install.sh # require internet connection
+   sudo bash ./batsetup-rpi.sh <ip>
    ```
 
-   Replace <ip> with the desired IP you want to set for this device.
+   Replace <ip> with the desired IP you want to set for this device, e.g. 172.27.0.1/16.
 
    **Trouble-shooting**
 
-   * If you get error like "device or resource busy", it is likely that you didn't disable wpa_supplicant. First try rebooting the system.
+   * If you get error like "device or resource busy", it is likely that you didn't disable wpa_supplicant. First try disconnecting from Wi-Fi, erasing Wi-Fi credentials in `/etc/wpa_supplicant/wpa_supplicant.conf`, finally rebooting the system.
 
    If the setup is successful,  you should be able to get similar output as the following:
 
@@ -67,8 +67,6 @@
    sudo batctl o # get originators
    sudo batctl n # get neighbors
    ```
-
-   Tools of `alfred` and `batadv-vis` are enabled in the installation script to visualize the mesh network.
 
 3. To automatically complete network setup each time when the system boots, Make `batsetup-rpi.sh` executable with `chmod u+x batsetup-rpi.sh` and finally add its absolute path into `/etc/rc.local` before `return 0` line.
 
