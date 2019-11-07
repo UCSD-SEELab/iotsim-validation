@@ -4,6 +4,22 @@
 
 [pi-ina219 library on PyPI](https://pypi.org/project/pi-ina219/): this is the Python library used in our setting.
 
+## Requirements
+
+The following operations needs internet connection.
+
+1. Install `pip3`.
+
+   ```shell
+   sudo apt install python3-pip
+   ```
+
+2. Install `pi-ina219` module.
+
+   ```
+   pip3 install pi-ina219
+   ```
+
 ## Setup on RPi
 
 1. Connect INA219 to RPi. Check through `i2cdetect`:
