@@ -16,3 +16,7 @@ if [ ! -f /home/pi/batctl ]; then
 	cd batctl
 	make install
 fi
+
+# other tools in testing
+apt install i2c-tools
+apt install wondershaper
