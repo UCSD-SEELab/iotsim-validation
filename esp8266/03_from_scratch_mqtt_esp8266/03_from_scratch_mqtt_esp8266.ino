@@ -3,11 +3,11 @@
 #include<PubSubClient.h>
 
 /*Connecting to WiFi network*/
-const char* ssid = "SEELAB_IN_LAB"; //SEELAN_IN_LAB, Samsung Galaxy J3 Prime 6909
+const char* ssid = "SEELAB_IN_LAB"; //SEELAB_IN_LAB, Samsung Galaxy J3 Prime 6909
 const char* password = "seelab2148"; //seelab2148, prime6909
 
 /*MQTT server credentials*/
-const char* mqttServer = "192.168.1.57 ";  //192.168.1.57 - For the SEELAB setup; tailor.cloudmqtt.com - for cloudMQTT
+const char* mqttServer = "192.168.1.57";  //192.168.1.57 - For the SEELAB setup; tailor.cloudmqtt.com - for cloudMQTT
 const int mqttPort = 61613 ; //61613 - For the SEELAB setup ; 18660 - for cloudMQTT
 // Optional additional authentication; Not included in present setup
 // const char* mqttUser = "ngwojkpj";
@@ -32,6 +32,8 @@ void setup()
         delay(500);
         Serial.print("Connecting to WiFi..");
     }
+    IPAddress ip = WiFi.localIP();
+    Serial.println(ip);
 
     /*Using setServer(method) to specify address and port of MQTT server*/
     client.setServer(mqttServer, mqttPort);
