@@ -1,5 +1,7 @@
 # Setup Raspberry Pi as Mesh Node
 
+## Setup Procedures
+
 1. Install `batman-dev` and `batctl`, configure network settings on RPi with the following commands:
 
    ```shell
@@ -70,7 +72,11 @@
 
 3. To automatically complete network setup each time when the system boots, Make `batsetup-rpi.sh` executable with `chmod u+x batsetup-rpi.sh` and finally add its absolute path into `/etc/rc.local` before `return 0` line.
 
+## Reset Procedure
 
+1. Remember to delete the line you added in `/etc/rc.local`, if any.
+2. Run `reset.sh` to undo all the settings.
+3. Reboot system.
 
 # Resources
 
@@ -81,3 +87,4 @@
 [Setting up an Ad-Hoc Mesh Network with Raspberry Pi 3B+ using BATMAN-Adv](https://medium.com/swlh/setting-up-an-ad-hoc-mesh-network-with-raspberry-pi-3b-using-batman-adv-1c08ee565165).
 
 [How To Configure batman-adv on the Raspberry Pi 3](https://www.reddit.com/r/darknetplan/comments/68s6jp/how_to_configure_batmanadv_on_the_raspberry_pi_3/).
+
