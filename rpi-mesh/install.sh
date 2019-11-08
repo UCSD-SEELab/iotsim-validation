@@ -19,4 +19,7 @@ fi
 
 # other tools in testing
 apt install i2c-tools
-apt install wondershaper
+if [ ! -f /home/pi/wondershaper ]; then
+	cd /home/pi
+	git clone  https://github.com/magnific0/wondershaper.git
+fi
