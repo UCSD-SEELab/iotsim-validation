@@ -23,3 +23,5 @@ if [ ! -f /home/pi/wondershaper ]; then
 	cd /home/pi
 	git clone  https://github.com/magnific0/wondershaper.git
 fi
+apt install python3-pip
+pip3 install pi-ina219 paho-mqtt
