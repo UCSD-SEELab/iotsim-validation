@@ -18,7 +18,7 @@ painlessMesh  mesh;
 // User stub
 void sendMessage() ; // Prototype so PlatformIO doesn't complain
 
-Task taskSendMessage( TASK_SECOND * 1 , TASK_FOREVER, &sendMessage );
+Task taskSendMessage( TASK_SECOND * 0.1 , TASK_FOREVER, &sendMessage );
 
 void sendMessage() {
   String msg = "Hello from node ";
