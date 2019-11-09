@@ -29,7 +29,7 @@ void mqttCallback(char* topic, byte* payload, unsigned int length);
 IPAddress getlocalIP();
 
 IPAddress myIP(0,0,0,0);
-IPAddress mqttBroker(192, 168, 1, 57);
+IPAddress mqttBroker(192, 168, 1, 46);
 
 painlessMesh  mesh;
 WiFiClient wifiClient;
