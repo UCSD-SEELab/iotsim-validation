@@ -10,7 +10,9 @@
 
 ### Setup Procedures
 
-1. Install `batman-dev` and `batctl`, configure network settings on RPi with the following commands:
+1. Remember to enable ssh and I2C interface in `raspi-config`.
+
+2. Install `batman-dev` and `batctl`, configure network settings on RPi with the following commands:
 
    ```shell
    sudo bash ./install.sh # require internet connection
@@ -69,7 +71,7 @@
 
    The important part of above output is `ESSID` and `Cell` value. They should be same on all devices. If you see a similar outcome, then the network has been setup.  
 
-2. Test mesh network.
+3. Test mesh network.
 
    You can try reaching other mesh nodes in the network, if any, with the following commands:
 
@@ -78,7 +80,7 @@
    sudo batctl n # get neighbors
    ```
 
-3. To automatically complete network setup each time when the system boots, Make `batsetup-rpi.sh` executable with `chmod u+x batsetup-rpi.sh` and finally add its absolute path into `/etc/rc.local` before `return 0` line.
+4. To automatically complete network setup each time when the system boots, Make `batsetup-rpi.sh` executable with `chmod u+x batsetup-rpi.sh` and finally add its absolute path into `/etc/rc.local` before `return 0` line.
 
 ### Reset Procedure
 
@@ -113,6 +115,7 @@ sudo /etc/init.d/ntp start
 To use `bind_interface` in `mosquitto.conf`, you need to download the newest version of mosquitto from their [official download page](https://mosquitto.org/download/). Untar the file and `cd` into it, run the following commands:
 
 ```shell
+sudo apt-get update
 sudo apt-get install libssl-dev # required in the make process
 sudo make
 sudo make install
@@ -121,6 +124,6 @@ sudo make install
 You can use the configuration file in this directory to start the mosquitto bound to eth0:
 
 ```shell
-mosquitto -c ./mosquitto.conf -p 61613 -v
+mosquitto -c ./mosquitto-eth0.conf -p 61613 -v
 ```
 

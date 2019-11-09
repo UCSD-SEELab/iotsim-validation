@@ -18,7 +18,7 @@ import paho.mqtt.client as mqtt
 import threading
 import time
 import os
-
+import sys
 ADDRESS_INA219 = 0x44
 
 myIP = None
@@ -69,7 +69,7 @@ def main():
 		temp = read_temp()
 		msg = '{},{},{}'.format(time_stamp, power, temp)
 		topic = 'data/{}'.format(myIP)
-		client.publish(topic=topic., payload=msg)
+		client.publish(topic=topic, payload=msg)
 		time.sleep(pt_interval)
 
 
