@@ -1,6 +1,14 @@
-# Setup Raspberry Pi as Mesh Node
+# Setup a Raspberry Pi node in the mesh network
 
-## Setup Procedures
+[Setup Raspberry Pi as Mesh Node](#Setup-Raspberry-Pi-as-Mesh-Node)
+
+[Setup Time Synchronization](#Setup-Time-Synchronization)
+
+[Use Mosquitto with fixed interface](#Use-Mosquitto-with-fixed-interface)
+
+## Setup Raspberry Pi as Mesh Node
+
+### Setup Procedures
 
 1. Install `batman-dev` and `batctl`, configure network settings on RPi with the following commands:
 
@@ -72,11 +80,33 @@
 
 3. To automatically complete network setup each time when the system boots, Make `batsetup-rpi.sh` executable with `chmod u+x batsetup-rpi.sh` and finally add its absolute path into `/etc/rc.local` before `return 0` line.
 
-## Reset Procedure
+### Reset Procedure
 
 1. Remember to delete the line you added in `/etc/rc.local`, if any.
 2. Run `reset.sh` to undo all the settings.
 3. Reboot system.
+
+### Resources
+
+[pi-adhoc-mqtt-cluster](https://github.com/suiluj/pi-adhoc-mqtt-cluster/wiki/Batman-Adv-and-Batctl): Setup RPi 3, 2, zero as normal mesh node and gateway.
+
+[USB Dongle as AP and Hotspot Sharing Configuration](https://github.com/suiluj/pi-adhoc-mqtt-cluster/wiki/USB-Dongle-Wifi-Configuration).
+
+[Setting up an Ad-Hoc Mesh Network with Raspberry Pi 3B+ using BATMAN-Adv](https://medium.com/swlh/setting-up-an-ad-hoc-mesh-network-with-raspberry-pi-3b-using-batman-adv-1c08ee565165).
+
+[How To Configure batman-adv on the Raspberry Pi 3](https://www.reddit.com/r/darknetplan/comments/68s6jp/how_to_configure_batmanadv_on_the_raspberry_pi_3/).
+
+## Setup Time Synchronization
+
+According to [a blog](http://raspberrypi.tomasgreno.cz/ntp-client-and-server.html), if you want to sync Pi's time with NTP server:
+
+```shell
+sudo apt-get install ntp
+sudo systemctl stop systemd-timesyncd
+sudo systemctl disable systemd-timesyncd
+sudo /etc/init.d/ntp stop
+sudo /etc/init.d/ntp start
+```
 
 ## Use Mosquitto with fixed interface
 
@@ -93,14 +123,4 @@ You can use the configuration file in this directory to start the mosquitto boun
 ```shell
 mosquitto -c ./mosquitto.conf -p 61613 -v
 ```
-
-# Resources
-
-[pi-adhoc-mqtt-cluster](https://github.com/suiluj/pi-adhoc-mqtt-cluster/wiki/Batman-Adv-and-Batctl): Setup RPi 3, 2, zero as normal mesh node and gateway.
-
-[USB Dongle as AP and Hotspot Sharing Configuration](https://github.com/suiluj/pi-adhoc-mqtt-cluster/wiki/USB-Dongle-Wifi-Configuration).
-
-[Setting up an Ad-Hoc Mesh Network with Raspberry Pi 3B+ using BATMAN-Adv](https://medium.com/swlh/setting-up-an-ad-hoc-mesh-network-with-raspberry-pi-3b-using-batman-adv-1c08ee565165).
-
-[How To Configure batman-adv on the Raspberry Pi 3](https://www.reddit.com/r/darknetplan/comments/68s6jp/how_to_configure_batmanadv_on_the_raspberry_pi_3/).
 
