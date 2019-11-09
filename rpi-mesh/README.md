@@ -78,6 +78,22 @@
 2. Run `reset.sh` to undo all the settings.
 3. Reboot system.
 
+## Use Mosquitto with fixed interface
+
+To use `bind_interface` in `mosquitto.conf`, you need to download the newest version of mosquitto from their [official download page](https://mosquitto.org/download/). Untar the file and `cd` into it, run the following commands:
+
+```shell
+sudo apt-get install libssl-dev # required in the make process
+sudo make
+sudo make install
+```
+
+You can use the configuration file in this directory to start the mosquitto bound to eth0:
+
+```shell
+mosquitto -c ./mosquitto.conf -p 61613 -v
+```
+
 # Resources
 
 [pi-adhoc-mqtt-cluster](https://github.com/suiluj/pi-adhoc-mqtt-cluster/wiki/Batman-Adv-and-Batctl): Setup RPi 3, 2, zero as normal mesh node and gateway.
