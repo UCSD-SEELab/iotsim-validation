@@ -51,6 +51,7 @@ server_IP = '192.168.1.46' # localhost
 server_port = 61613
 client_forward = mqtt.Client()
 client_forward.connect(server_IP, server_port, 60)
+client_forward.on_connect = on_connect
 client_forward.on_message = on_message
 client_forward.loop_start() # nonblocking version
 
