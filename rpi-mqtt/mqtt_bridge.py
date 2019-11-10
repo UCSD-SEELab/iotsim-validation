@@ -26,24 +26,26 @@ Act as a MQTT client.
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect_pi(client, userdata, flags, rc):
     print("Connected with result code " + str(rc))
-    client.subscribe("cmd") # subscribe cmd topic
+    client.subscribe('cmd') # subscribe cmd topic
 
 def on_message_pi(client, userdata, msg):
 	# simply forward all the incoming messages
 	print("Received from pi broker:" + msg.topic + " " + str(msg.payload))
 	global client_esp
-	if (msg.topic == 'cmd'):
-		broadcast_topic = "painlessMesh/to/broadcast"
-		try:
-			client_esp.publish(topic=broadcast_topic, payload=msg.payload)
-		except Exception as e:
-			print(e)
+	broadcast_topic = "painlessMesh/to/broadcast"
+	try:
+		client_esp.publish(topic=broadcast_topic, payload=msg.payload)
+	except Exception as e:
+		print(e)
 
 broker_IP = '172.27.0.1'
 broker_port = 61613
 
 client_pi = mqtt.Client("Bridge")
 client_pi.connect(broker_IP, broker_port, 60)
+client_pi.on_connect = on_connect_pi
+client_pi.on_message = on_message_pi
+client_pi.loop_start() # nonblocking version
 
 '''
 This section is for forwarding ESP8266's msg.
@@ -62,7 +64,7 @@ def on_message_esp(client, userdata, msg):
 	data_topic = 'data/' + msg.topic
 	data_payload = str(time.time()) + ',' + msg.payload
 	try:
-		client_pi.publish(topic=data_topic, payload=payload)
+		client_pi.publish(topic=data_topic, payload=data_payload)
 	except Exception as e:
 		print(e)
 
