@@ -18,10 +18,10 @@ data_collect_script = dir_path + '/data_collection.py'
 
 Broker_IP = '172.27.0.1'
 Broker_port = 61613
-Bridge_IP = '172.27.0.5'
+Bridge_IP = '172.27.0.6'
 Bridge_config = '/home/pi/iotsim-validation/rpi-broker/mosquitto-eth0.conf'
 Bridge_script = '/home/pi/iotsim-validation/rpi-mqtt/mqtt_bridge.py'
-Pi_client = ['172.27.0.2', '172.27.0.3', '172.27.0.4', '172.27.0.5']
+Pi_client = ['172.27.0.2', '172.27.0.3', '172.27.0.4', '172.27.0.5', '172.27.0.6']
 Pi_zero_script = '/home/pi/iotsim-validation/rpi-mqtt/mqtt_client.py'
 
 def start_bridge():
@@ -32,7 +32,7 @@ def start_bridge():
 	print('start broker on bridge by {}'.format(cmd))
 	process = subprocess.Popen("ssh {user}@{host} {cmd}".format( \
 		user='pi', host=Bridge_IP, cmd=cmd), shell=True, \
-		stdout=subprocess.PIPE,
+		stdout=subprocess.PIPE, \
         stderr=subprocess.PIPE)
 	stdout, stderr = process.communicate()
 	print('result: ', stdout, stderr)
@@ -44,7 +44,7 @@ def start_bridge():
 	print('start bridging script on bridge by {}'.format(cmd))
 	process = subprocess.Popen("ssh {user}@{host} {cmd}".format( \
 		user='pi', host=Bridge_IP, cmd=cmd), shell=True, \
-		stdout=subprocess.PIPE,
+		stdout=subprocess.PIPE, \
         stderr=subprocess.PIPE)
 	stdout, stderr = process.communicate()
 	print('result: ', stdout, stderr)
@@ -55,7 +55,7 @@ def kill_bridge():
 	print('get bridging script\'s PID on bridge by {}'.format(cmd))
 	process = subprocess.Popen("ssh {user}@{host} {cmd}".format( \
 		user='pi', host=Bridge_IP, cmd=cmd), shell=True, \
-		stdout=subprocess.PIPE,
+		stdout=subprocess.PIPE, \
         stderr=subprocess.PIPE)
 	stdout, stderr = process.communicate()
 	print('result: ', stdout, stderr)
@@ -65,7 +65,7 @@ def kill_bridge():
 	print('kill bridging script on bridge by {}'.format(cmd))
 	process = subprocess.Popen("ssh {user}@{host} {cmd}".format( \
 		user='pi', host=Bridge_IP, cmd=cmd), shell=True, \
-		stdout=subprocess.PIPE,
+		stdout=subprocess.PIPE, \
         stderr=subprocess.PIPE)
 	stdout, stderr = process.communicate()
 	print('result: ', stdout, stderr)
@@ -76,7 +76,7 @@ def kill_bridge():
 	print('get mosquitto broker\'s PID on bridge by {}'.format(cmd))
 	process = subprocess.Popen("ssh {user}@{host} {cmd}".format( \
 		user='pi', host=Bridge_IP, cmd=cmd), shell=True, \
-		stdout=subprocess.PIPE,
+		stdout=subprocess.PIPE, \
         stderr=subprocess.PIPE)
 	stdout, stderr = process.communicate()
 	print('result: ', stdout, stderr)
@@ -86,7 +86,7 @@ def kill_bridge():
 	print('kill mosquitto broker on bridge by {}'.format(cmd))
 	process = subprocess.Popen("ssh {user}@{host} {cmd}".format( \
 		user='pi', host=Bridge_IP, cmd=cmd), shell=True, \
-		stdout=subprocess.PIPE,
+		stdout=subprocess.PIPE, \
         stderr=subprocess.PIPE)
 	stdout, stderr = process.communicate()
 	print('result: ', stdout, stderr)
@@ -104,7 +104,7 @@ def start_pi_zero(pt_interval, fake_size, exec_time):
 		print('start mqtt client on pi {} by {}'.format(Pi_IP, cmd))
 		process = subprocess.Popen("ssh {user}@{host} {cmd}".format( \
 			user='pi', host=Pi_IP, cmd=cmd), shell=True, \
-			stdout=subprocess.PIPE,
+			stdout=subprocess.PIPE, \
 	        stderr=subprocess.PIPE)
 		stdout, stderr = process.communicate()
 		print('result: ', stdout, stderr)
