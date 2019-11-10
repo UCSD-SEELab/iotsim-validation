@@ -14,25 +14,33 @@
 
 Scheduler userScheduler; // to control your personal task
 painlessMesh  mesh;
+bool current_status = false;
+bool start_status = false;
+uint32_t rootID = 0;
 
 // User stub
 void sendMessage() ; // Prototype so PlatformIO doesn't complain
 
-Task taskSendMessage( TASK_SECOND * 0.1 , TASK_FOREVER, &sendMessage );
+Task taskSendMessage( TASK_SECOND * 0.2 , TASK_FOREVER, &sendMessage );
 
 void sendMessage() {
+  // add power measurement and publishing
   String msg = "Hello from node ";
   msg += mesh.getNodeId();
-  mesh.sendBroadcast( msg );
+  mesh.sendSingle( rootID, msg );
 }
 
 // Needed for painless library
 void receivedCallback( uint32_t from, String &msg ) {
   Serial.printf("startHere: Received from %u msg=%s\n", from, msg.c_str());
+  if (msg == "start") {
+    rootID = from;
+    start_status = true;
+  }
 }
 
 void newConnectionCallback(uint32_t nodeId) {
-    Serial.printf("--> startHere: New Connection, nodeId = %u\n", nodeId);
+  Serial.printf("--> startHere: New Connection, nodeId = %u\n", nodeId);
 }
 
 void changedConnectionCallback() {
@@ -40,7 +48,7 @@ void changedConnectionCallback() {
 }
 
 void nodeTimeAdjustedCallback(int32_t offset) {
-    Serial.printf("Adjusted time %u. Offset = %d\n", mesh.getNodeTime(),offset);
+  Serial.printf("Adjusted time %u. Offset = %d\n", mesh.getNodeTime(),offset);
 }
 
 void setup() {
@@ -54,11 +62,19 @@ void setup() {
   mesh.onChangedConnections(&changedConnectionCallback);
   mesh.onNodeTimeAdjusted(&nodeTimeAdjustedCallback);
 
+  // Bridge node, should (in most cases) be a root node. See [the wiki](https://gitlab.com/painlessMesh/painlessMesh/wikis/Possible-challenges-in-mesh-formation) for some background
+  mesh.setRoot(false);
+  // This node and all other nodes should ideally know the mesh contains a root, so call this on all nodes
+  mesh.setContainsRoot(true);
+
   userScheduler.addTask( taskSendMessage );
-  taskSendMessage.enable();
 }
 
 void loop() {
   // it will run the user scheduler as well
   mesh.update();
+  if (start_status && !current_status) {
+    taskSendMessage.enable();
+    current_status = true;
+  }
 }

@@ -35,6 +35,21 @@ painlessMesh  mesh;
 WiFiClient wifiClient;
 PubSubClient mqttClient(mqttBroker, 61613, mqttCallback, wifiClient);
 
+// Power measurement task
+Scheduler userScheduler; // to control your personal task
+Task taskSendMessage( TASK_SECOND * 0.2 , TASK_FOREVER, &sendMessage );
+
+void sendMessage() {
+  // add power measurement and publishing
+  String msg = "Hello from node ";
+  msg += mesh.getNodeId();
+
+  // pub power data on this node
+  String topic = String(mesh.getNodeId());
+  if (mqttClient.connected())
+    mqttClient.publish(topic.c_str(), msg.c_str());
+}
+
 void setup() {
   Serial.begin(115200);
 
@@ -52,6 +67,10 @@ void setup() {
   mesh.setRoot(true);
   // This node and all other nodes should ideally know the mesh contains a root, so call this on all nodes
   mesh.setContainsRoot(true);
+
+  // Enable power pusblishing script
+  userScheduler.addTask( taskSendMessage );
+  taskSendMessage.enable();
 }
 
 void loop() {
@@ -71,8 +90,9 @@ void loop() {
 
 void receivedCallback( const uint32_t &from, const String &msg ) {
   Serial.printf("bridge: Received from %u msg=%s\n", from, msg.c_str());
-  String topic = "painlessMesh/from/" + String(from);
-  mqttClient.publish(topic.c_str(), msg.c_str());
+  String topic = String(from);
+  if (mqttClient.connected())
+    mqttClient.publish(topic.c_str(), msg.c_str());
 }
 
 void mqttCallback(char* topic, uint8_t* payload, unsigned int length) {
@@ -106,10 +126,10 @@ void mqttCallback(char* topic, uint8_t* payload, unsigned int length) {
     {
       mesh.sendSingle(target, msg);
     }
-    else
-    {
-      mqttClient.publish("painlessMesh/from/gateway", "Client not connected!");
-    }
+    //else
+    //{
+    //  mqttClient.publish("painlessMesh/from/gateway", "Client not connected!");
+    //}
   }
 }
 
