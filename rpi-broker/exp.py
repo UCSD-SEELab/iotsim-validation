@@ -21,7 +21,7 @@ Broker_port = 61613
 Bridge_IP = '172.27.0.5'
 Bridge_config = '/home/pi/iotsim-validation/rpi-broker/mosquitto-eth0.conf'
 Bridge_script = '/home/pi/iotsim-validation/rpi-mqtt/mqtt_bridge.py'
-Pi_zero = ['172.27.0.2', '172.27.0.3', '172.27.0.4']
+Pi_client = ['172.27.0.2', '172.27.0.3', '172.27.0.4', '172.27.0.5']
 Pi_zero_script = '/home/pi/iotsim-validation/rpi-mqtt/mqtt_client.py'
 
 def start_bridge():
@@ -96,14 +96,14 @@ def start_esp():
 		hostname=Broker_IP, port=Broker_port)
 
 def start_pi_zero(pt_interval, fake_size, exec_time):
-	for Pi_zero_IP in Pi_zero:
+	for Pi_IP in Pi_client:
 		log_path = '/home/pi/client.log'
 		cmd = 'python3 {} {} {} {} {} >> {} 2>&1 &'.format(\
-			Pi_zero_script, Pi_zero_IP, pt_interval, \
+			Pi_zero_script, Pi_IP, pt_interval, \
 			fake_size, exec_time, log_path)
-		print('start mqtt client on pi pi zero by {}'.format(cmd))
+		print('start mqtt client on pi {} by {}'.format(Pi_IP, cmd))
 		process = subprocess.Popen("ssh {user}@{host} {cmd}".format( \
-			user='pi', host=Pi_zero_IP, cmd=cmd), shell=True, \
+			user='pi', host=Pi_IP, cmd=cmd), shell=True, \
 			stdout=subprocess.PIPE,
 	        stderr=subprocess.PIPE)
 		stdout, stderr = process.communicate()
