@@ -82,7 +82,7 @@ def kill_bridge():
 	print('result: ', stdout, stderr)
 	pid = int(stdout)
 
-	cmd = 'sudo kill -9 {}'.format(pid)
+	cmd = 'kill -9 {}'.format(pid)
 	print('kill mosquitto broker on bridge by {}'.format(cmd))
 	process = subprocess.Popen("ssh {user}@{host} {cmd}".format( \
 		user='pi', host=Bridge_IP, cmd=cmd), shell=True, \
@@ -122,6 +122,6 @@ def kill_data_collection():
 	stream = os.popen(cmd)
 	pid = int(stream.read())
 	# kill it
-	cmd = 'sudo kill -9 {}'.format(pid)
+	cmd = 'kill -9 {}'.format(pid)
 	print('kill data_collection by {}.'.format(cmd))
 	os.popen(cmd)

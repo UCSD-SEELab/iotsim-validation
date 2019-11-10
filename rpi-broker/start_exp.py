@@ -22,7 +22,8 @@ def main():
 		fake_size = int(sys.argv[2])
 		exec_time = int(sys.argv[3])
 
-	# configure_settings()
+	# configurations
+	# set rpi3's freq to 1200MHz
 
 	# start_broker() # start mannually
 	exp.start_bridge()
