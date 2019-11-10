@@ -14,7 +14,6 @@ Date: 11/8/2019
 '''
 import paho.mqtt.client as mqtt
 import time
-import os
 import sys
 
 client_pi = None
