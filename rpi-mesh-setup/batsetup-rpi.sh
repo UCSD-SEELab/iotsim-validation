@@ -18,6 +18,9 @@ IP=$1;
 
 # Disable wpa_supplicant
 killall wpa_supplicant;
+bash service wpa_supplicant stop;
+sudo systemctl mask wap_supplicant.service;
+sudo update-rc.d dhcpcd disable;
 
 # set interfaces
 ip link set wlan0 down;
