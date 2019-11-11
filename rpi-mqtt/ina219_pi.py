@@ -4,7 +4,7 @@ from ina219 import DeviceRangeError
 
 SHUNT_OHMS = 0.1
 MAX_EXPECTED_AMPS = 1.0
-ADDRESS = 0x44
+ADDRESS = 0x40 # all current sensors all at 0x40
 
 class ina219_pi(object):
     def __init__(self, address, shunt_ohms=SHUNT_OHMS,

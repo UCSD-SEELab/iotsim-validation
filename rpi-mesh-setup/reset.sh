@@ -11,5 +11,6 @@ iwconfig wlan0 mode managed;
 ip link set down dev bat0;
 ip link set wlan0 up;
 
+update-rc.d dhcpcd enable;
 service wpa_supplicant restart;
 systemctl restart networking.service;
