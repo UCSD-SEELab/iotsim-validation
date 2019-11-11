@@ -19,7 +19,7 @@ import threading
 import time
 import os
 import sys
-ADDRESS_INA219 = 0x44
+ADDRESS_INA219 = 0x40 # no drop
 
 myIP = None
 broker_IP = '172.27.0.1'

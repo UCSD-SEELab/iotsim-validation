@@ -12,6 +12,9 @@
 #include <painlessMesh.h>
 #include <PubSubClient.h>
 #include <WiFiClient.h>
+#include <Adafruit_INA219.h>
+
+Adafruit_INA219 ina219;
 
 #define   MESH_PREFIX     "esp-mesh"
 #define   MESH_PASSWORD   "12345678"
@@ -37,12 +40,13 @@ PubSubClient mqttClient(mqttBroker, 61613, mqttCallback, wifiClient);
 
 // Power measurement task
 Scheduler userScheduler; // to control your personal task
-Task taskSendMessage( TASK_SECOND * 0.2 , TASK_FOREVER, &sendMessage );
 
 void sendMessage() {
   // add power measurement and publishing
-  String msg = "Hello from node ";
-  msg += mesh.getNodeId();
+  float power_mW = 0;
+  power_mW = ina219.getPower_mW();
+  Serial.println(power_mW);
+  String msg = String(power_mW);
 
   // pub power data on this node
   String topic = String(mesh.getNodeId());
@@ -50,8 +54,14 @@ void sendMessage() {
     mqttClient.publish(topic.c_str(), msg.c_str());
 }
 
+Task taskSendMessage( TASK_SECOND * 0.2 , TASK_FOREVER, &sendMessage );
+
 void setup() {
   Serial.begin(115200);
+
+  // init ina 219
+  ina219.begin();
+  ina219.setCalibration_32V_1A();
 
   mesh.setDebugMsgTypes( ERROR | STARTUP | CONNECTION );  // set before init() so that you can see startup messages
 

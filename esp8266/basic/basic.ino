@@ -7,6 +7,9 @@
 //
 //************************************************************
 #include "painlessMesh.h"
+#include <Adafruit_INA219.h>
+
+Adafruit_INA219 ina219;
 
 #define   MESH_PREFIX     "esp-mesh"
 #define   MESH_PASSWORD   "12345678"
@@ -14,7 +17,7 @@
 
 Scheduler userScheduler; // to control your personal task
 painlessMesh  mesh;
-bool current_status = false;
+bool current_status = true;
 bool start_status = false;
 uint32_t rootID = 0;
 
@@ -25,9 +28,12 @@ Task taskSendMessage( TASK_SECOND * 0.2 , TASK_FOREVER, &sendMessage );
 
 void sendMessage() {
   // add power measurement and publishing
-  String msg = "Hello from node ";
-  msg += mesh.getNodeId();
-  mesh.sendSingle( rootID, msg );
+  float power_mW = 0;
+  power_mW = ina219.getPower_mW();
+  mesh.sendBroadcast( String(power_mW) );
+  Serial.print("Broadcasting ");
+  Serial.println(power_mW);
+  // mesh.sendSingle( rootID, String(power_mW) );
 }
 
 // Needed for painless library
@@ -54,6 +60,10 @@ void nodeTimeAdjustedCallback(int32_t offset) {
 void setup() {
   Serial.begin(115200);
 
+  // init ina 219
+  ina219.begin();
+  ina219.setCalibration_32V_1A();
+
   mesh.setDebugMsgTypes( ERROR | STARTUP | CONNECTION );  // set before init() so that you can see startup messages
 
   mesh.init( MESH_PREFIX, MESH_PASSWORD, &userScheduler, MESH_PORT );
@@ -68,13 +78,14 @@ void setup() {
   mesh.setContainsRoot(true);
 
   userScheduler.addTask( taskSendMessage );
+  taskSendMessage.enable();
 }
 
 void loop() {
   // it will run the user scheduler as well
   mesh.update();
-  if (start_status && !current_status) {
-    taskSendMessage.enable();
-    current_status = true;
-  }
+  //if (start_status && !current_status) {
+  //  taskSendMessage.enable();
+  //  current_status = true;
+  //}
 }

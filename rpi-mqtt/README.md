@@ -4,6 +4,8 @@
 
 [Setup MQTT Client on Raspberry Pi Zero](#Setup-MQTT-Client-on-Raspberry-Pi-Zero)
 
+Both installation of INA219 and paho-mqtt are included in `rpi-mesh-setup/install.sh`.
+
 ## Setup INA219
 
 ### Requirements

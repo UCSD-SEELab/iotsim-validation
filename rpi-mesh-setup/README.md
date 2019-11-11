@@ -112,6 +112,8 @@ sudo /etc/init.d/ntp start
 
 ## Use Mosquitto with fixed interface
 
+This is required only on Pi's running a broker, namely RPi 3B+'s in the network.
+
 To use `bind_interface` in `mosquitto.conf`, you need to download the newest version of mosquitto from their [official download page](https://mosquitto.org/download/). Untar the file and `cd` into it, run the following commands:
 
 ```shell
