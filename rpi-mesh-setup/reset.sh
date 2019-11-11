@@ -12,5 +12,5 @@ ip link set down dev bat0;
 ip link set wlan0 up;
 
 update-rc.d dhcpcd enable;
-service wpa_supplicant restart;
+systemctl restart wpa_supplicant.service;
 systemctl restart networking.service;
