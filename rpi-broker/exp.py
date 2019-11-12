@@ -21,7 +21,7 @@ Broker_port = 61613
 Bridge_IP = '172.27.0.6'
 Bridge_config = '/home/pi/iotsim-validation/rpi-broker/mosquitto-eth0.conf'
 Bridge_script = '/home/pi/iotsim-validation/rpi-mqtt/mqtt_bridge.py'
-Pi_client = ['172.27.0.2', '172.27.0.3', '172.27.0.4', '172.27.0.5', '172.27.0.6']
+Pi_client = ['172.27.0.1', '172.27.0.2', '172.27.0.3', '172.27.0.4', '172.27.0.5', '172.27.0.6']
 Pi_zero_script = '/home/pi/iotsim-validation/rpi-mqtt/mqtt_client.py'
 
 def start_bridge():

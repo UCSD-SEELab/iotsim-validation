@@ -78,6 +78,7 @@
    ```shell
    sudo batctl o # get originators
    sudo batctl n # get neighbors
+   traceroute <ip/mac address> # get trace to certain node
    ```
 
 4. To automatically complete network setup each time when the system boots, Make `batsetup-rpi.sh` executable with `chmod u+x batsetup-rpi.sh` and finally add its absolute path into `/etc/rc.local` before `return 0` line.
