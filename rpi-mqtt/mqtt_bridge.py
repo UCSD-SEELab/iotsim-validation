@@ -28,12 +28,11 @@ def on_connect_pi(client, userdata, flags, rc):
     client.subscribe('cmd') # subscribe cmd topic
 
 def on_message_pi(client, userdata, msg):
-	# simply forward all the incoming messages
+	# simply forward all the incoming cmd messages, from pi broker to esp
 	print("Received from pi broker:" + msg.topic + " " + str(msg.payload))
 	global client_esp
-	broadcast_topic = "painlessMesh/to/broadcast"
 	try:
-		client_esp.publish(topic=broadcast_topic, payload=msg.payload)
+		client_esp.publish(topic=msg.topic, payload=msg.payload)
 	except Exception as e:
 		print(e)
 
@@ -53,19 +52,26 @@ Act as a MQTT server.
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect_esp(client, userdata, flags, rc):
     print("Connected with result code " + str(rc))
-    client.subscribe("cmd") # subscribe cmd topic
+    client.subscribe("#") # subscribe all topics
 
 def on_message_esp(client, userdata, msg):
-	# simply forward all the incoming messages
-	print("Received from ESP mesh:" + msg.topic + " " + str(msg.payload))
+	# simply forward all the incoming messages, from esp to pi broker
+	print("Received from ESP:" + msg.topic + " " + str(msg.payload))
 	global client_pi
-	# format the topic, add time stamp to payload (power data of ESPs)
-	data_topic = 'data/' + msg.topic
-	data_payload = str(time.time()) + ',' + msg.payload
-	try:
-		client_pi.publish(topic=data_topic, payload=data_payload)
-	except Exception as e:
-		print(e)
+	if msg.topic == "status":
+		# simply forward all status ready msg
+		try:
+			client_pi.publish(topic=data_topic, payload=data_payload)
+		except Exception as e:
+			print(e)
+	else:
+		# format the data topic, add time stamp to payload (power data of ESPs)
+		data_topic = 'data/' + msg.topic
+		data_payload = str(time.time()) + ',' + msg.payload
+		try:
+			client_pi.publish(topic=data_topic, payload=data_payload)
+		except Exception as e:
+			print(e)
 
 # connect to the broker of ESPs
 server_IP = '192.168.1.46' # localhost

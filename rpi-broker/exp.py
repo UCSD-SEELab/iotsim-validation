@@ -61,7 +61,7 @@ def kill_bridge():
 	print('result: ', stdout, stderr)
 	pid = int(stdout)
 
-	cmd = 'sudo kill -9 {}'.format(pid)
+	cmd = 'kill -9 {}'.format(pid)
 	print('kill bridging script on bridge by {}'.format(cmd))
 	process = subprocess.Popen("ssh {user}@{host} {cmd}".format( \
 		user='pi', host=Bridge_IP, cmd=cmd), shell=True, \
@@ -95,7 +95,7 @@ def start_esp():
 	publish.single(topic='cmd', payload='start', \
 		hostname=Broker_IP, port=Broker_port)
 
-def start_pi_zero(pt_interval, fake_size, exec_time):
+def start_pi(pt_interval, fake_size, exec_time):
 	for Pi_IP in Pi_client:
 		log_path = '/home/pi/client.log'
 		cmd = 'python3 {} {} {} {} {} >> {} 2>&1 &'.format(\

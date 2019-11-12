@@ -1,95 +1,82 @@
-//Implemented from techtutorialsx.com
+/***************************************************************
+* MQTT Client running on ESP8266s. Publish power data to broker.
+* Remember to change clientID for different ESP8266 device.
+* Remember to set pt_interval for power sampling rate.
+*
+* Author: Xiaofan Yu
+* Date: 11/11/2019
+***************************************************************/
 #include <ESP8266WiFi.h>
-#include<PubSubClient.h>
+#include <PubSubClient.h>
+#include <Adafruit_INA219.h>
+
+Adafruit_INA219 ina219;
 
 /*Connecting to WiFi network*/
-const char* ssid = "SEELAB_IN_LAB"; //SEELAN_IN_LAB, Samsung Galaxy J3 Prime 6909
-const char* password = "seelab2148"; //seelab2148, prime6909
+const char* ssid = "SEELAB_IN_LAB";
+const char* password = "seelab2148";
 
 /*MQTT server credentials*/
-const char* mqttServer = "192.168.1.57 ";  //192.168.1.57 - For the SEELAB setup; tailor.cloudmqtt.com - for cloudMQTT
-const int mqttPort = 61613 ; //61613 - For the SEELAB setup ; 18660 - for cloudMQTT
-// Optional additional authentication; Not included in present setup
-// const char* mqttUser = "ngwojkpj";
-// const char* mqttPassword = "4Fvo2zQ51rb7";
-const char* clientID = "esp8266";
-const char* topic = "esp/test";
+const char* mqttBroker = "192.168.1.46";
+const int mqttPort = 61613;
+const char* clientID = "esp1"; // change this for different device
+const int pt_interval = 200; // sampling power how many ms
+bool sampling = false; // power sampling status flag
 
-/*Declaring WiFi client to establish connection to a specific IP and port*/
-WiFiClient espClient;
+/*Declaring WiFi and mqtt client*/
+WiFiClient wifiClient;
+PubSubClient mqttClient(mqttBroker, mqttPort, mqttCallback, wifiClient);
 
-/*Declaring object of class PubSubClient which receives input of the constructor the previously defined WiFiClient*/
-PubSubClient client(espClient);
-
-// put your setup code here, to run once:
 void setup() 
 {
     Serial.begin(115200);
+
+    ina219.begin();
+    ina219.setCalibration_32V_1A();
+
     WiFi.begin(ssid, password);
-    
-    while (WiFi.status() != WL_CONNECTED)
-    {
+    while (WiFi.status() != WL_CONNECTED) {
         delay(500);
         Serial.print("Connecting to WiFi..");
     }
+    Serial.println("WiFi connected.")
 
-    /*Using setServer(method) to specify address and port of MQTT server*/
-    client.setServer(mqttServer, mqttPort);
-
-    /*setCallback on the same object is used to specify a handling function that is executed when a MQTT message is received*/
-    client.setCallback(callback);
-
-    /*Try to establishing connection with MQTT server*/
-    while(!client.connected())
-    {
-        connect_MQTT();
-    }
-    /*Subscribing to the topic to receive messages from other publishers*/
-    //client.subscribe("esp/test");
+    if (mqttClient.connect(clientID)) {
+        mqttClient.subscribe("cmd");
+        Serial.println("Connect to broker and subscribe cmd topic.")
+        char msg[20];
+        ready_msg = sprintf(msg, "%s is ready!", clientID);
+        mqttClient.publish("status", msg);
+        Serial.println("Publish ready message.")
+    } 
 }
 
-void connect_MQTT()
+void mqttcallback(char* topic, uint8_t* payload, unsigned int length)
 {
-    Serial.println("Connecting to MQTT...");
-    if (client.connect(clientID))
-    {
-        Serial.println("Connected to MQTT server");  
-    }
-    else 
-    {
-        Serial.print("failed with state");
-        Serial.print(client.state());
-        delay(2000);
-    }
+    String msg = String(payload);
+    if (msg == "start") {
+        sampling = true;
+    }  
 }
 
-/*Defining callback function which handles incoming messages for the topics subscribed*/
-void callback(char* topic, byte* payload, unsigned int length)
-{
-    /*Print topic name to the serial port*/
-    Serial.print("Message arrived in topic:");
-    Serial.println(topic);
-
-    /*Print each byte of mesaage received*/
-    Serial.print("Message:");
-    for (int i=0; i<length; i++)
-    {
-      Serial.print((char)payload[i]);
-    }    
-}
-
-// put your main code here, to run repeatedly:
 void loop() 
 {
-    /*Publishing message on a topic*/
-    client.publish("esp/test","Hello from ESP8266");
-    Serial.println("Published");
-    /*Try to reconnect to MQTT server if not connected*/
-    while(!client.connected())
-    {
-        connect_MQTT();
+    if (sampling) {
+        float power_mW = ina219.getPower_mW();
+        Serial.println(power_mW);
+        
+        if (mqttClient.connected()) {
+            char msg[20];
+            sprintf(msg, "%f", power_mW);
+            mqttClient.publish(clientID, msg);
+        }
+        else {
+            if (mqttClient.connect(clientID))
+                mqttClient.subscribe("cmd");
+            Serial.println("Reconnect to broker and subscribe cmd topic.")
+        }
     }
 
-  /*Calling the loop method of PubSubClient. Called continuously to process incoming messages and maintain connection to the server*/
-  // client.loop();
+    client.loop();
+    delay(pt_interval);
 }

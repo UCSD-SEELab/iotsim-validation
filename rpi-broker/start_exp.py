@@ -28,7 +28,7 @@ def main():
 	# start_broker() # start mannually
 	exp.start_bridge()
 	exp.start_esp()
-	exp.start_pi_zero(pt_interval, fake_size, exec_time)
+	exp.start_pi(pt_interval, fake_size, exec_time)
 	exp.start_data_collection()
 
 	time.sleep(exec_time + 10)

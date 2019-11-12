@@ -23,15 +23,18 @@ print("data directory is {}".format(dir_path))
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code " + str(rc))
     client.subscribe("data/#") # subscribe to all data
+    client.subscribe("status") # ready status channel
 
 def on_message(client, userdata, msg):
 	# save data
 	print("Received from pi broker:" + msg.topic + " " + str(msg.payload))
-	sourceID = msg.topic.split('/')[1]
-	file_name = dir_path + '/' + sourceID + '.txt'
+	topic = msg.topic.split('/')
+	if topic[0] == "data":
+		sourceID = topic[1]
+		file_name = dir_path + '/' + sourceID + '.txt'
 
-	with open(file_name, 'a+') as f:
-		f.write(msg.payload + '\r\n')
+		with open(file_name, 'a+') as f:
+			f.write(msg.payload + '\r\n')
 
 
 broker_IP = '172.27.0.1'
