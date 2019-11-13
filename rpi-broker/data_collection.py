@@ -33,6 +33,11 @@ def on_message(client, userdata, msg):
         sourceID = topic[1]
         file_name = dir_path + '/' + sourceID + '.txt'
         pt_data = msg.payload.decode('utf-8')
+
+        source_time = pt_data.split(',')[0]
+        delay_time = time.time() - source_time
+
+        pt_data.append(',' + str(delay_time))
         with open(file_name, 'a+') as f:
             f.write(pt_data + '\r\n')
 
