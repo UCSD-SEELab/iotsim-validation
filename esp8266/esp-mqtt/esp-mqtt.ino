@@ -20,7 +20,7 @@ const char* password = "seelab2148";
 const char* mqttBroker = "192.168.1.46";
 const int mqttPort = 61613;
 const char* clientID = "esp1"; // change this for different device
-const int pt_interval = 1000; // sampling power how many ms
+const int pt_interval = 200; // sampling power how many ms
 bool sampling = false; // power sampling status flag
 
 /*Declaring WiFi and mqtt client*/
@@ -44,7 +44,7 @@ void setup()
 
     if (mqttClient.connect(clientID)) {
         mqttClient.subscribe("cmd");
-        Serial.println("Connect to broker and subscribe cmd topic.");
+        Serial.println("Connected to broker and subscribe cmd topic.");
         char topic[20];
         sprintf(topic, "status/%s", clientID);
         mqttClient.publish(topic, "ready");
@@ -78,9 +78,12 @@ void loop()
             mqttClient.publish(topic, msg);
         }
         else {
-            if (mqttClient.connect(clientID))
+            Serial.println("Disconnected");
+            sampling = false;
+            if (mqttClient.connect(clientID)) {
                 mqttClient.subscribe("cmd");
-            Serial.println("Reconnect to broker and subscribe cmd topic.");
+                Serial.println("Connected to broker and subscribe cmd topic.");
+            }
         }
     }
 

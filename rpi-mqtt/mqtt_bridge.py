@@ -60,24 +60,22 @@ def on_message_esp(client, userdata, msg):
     print("Received from ESP:" + msg.topic + " " + str(msg.payload))
     global client_pi
     topic = msg.topic.split('/')
-    print(topic)
-    print(topic[0] == 'data')
-    #if topic[0] == 'status':
-    #    # simply forward all ready msg
-    #    try:
-    #        client_pi.publish(topic=msg.topic, payload=msg.payload)
-    #        print("forward status msg: {}:{}".format(msg.topic, msg.payload))
-    #    except Exception as e:
-    #        print(e)
-    #if (topic[0] == 'data'):
+    if topic[0] == 'data':
         # format the data topic, add time stamp to payload (power data of ESPs)
-    data_payload = bytes(time.time()) + b',' + msg.payload
-    print(data_payload)
-    try:
-        client_pi.publish(topic=msg.topic, payload=data_payload)
-        print("forward data from {}".format(msg.topic))
-    except Exception as e:
-        print(e)
+        data_payload = str(time.time()) + ',' + msg.payload.decode('utf-8')
+        data_payload = data_payload.encode('utf-8')
+        try:
+            client_pi.publish(topic=msg.topic, payload=data_payload)
+            print("forward data from {}".format(msg.topic))
+        except Exception as e:
+            print(e)
+    else: # topic[0] == 'status':
+        # simply forward all ready msg
+        try:
+            client_pi.publish(topic=msg.topic, payload=msg.payload)
+            print("forward status msg: {}:{}".format(msg.topic, msg.payload))
+        except Exception as e:
+            print(e)
 
 # connect to the broker of ESPs
 server_IP = '192.168.1.46' # localhost

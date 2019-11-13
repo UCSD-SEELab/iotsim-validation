@@ -29,7 +29,7 @@ def main():
     # set rpi3's freq to 1200MHz
 
     
-    #exp.start_bridge()
+    exp.start_bridge()
     print("Bridge is started. Please make sure:")
     print("(1) Pi Broker is started on 172.27.0.1.")
     print("(2) All ESPs are ready with ready msgs showing up on broker.")
