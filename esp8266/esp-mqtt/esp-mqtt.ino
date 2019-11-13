@@ -20,11 +20,12 @@ const char* password = "seelab2148";
 const char* mqttBroker = "192.168.1.46";
 const int mqttPort = 61613;
 const char* clientID = "esp1"; // change this for different device
-const int pt_interval = 200; // sampling power how many ms
+const int pt_interval = 1000; // sampling power how many ms
 bool sampling = false; // power sampling status flag
 
 /*Declaring WiFi and mqtt client*/
 WiFiClient wifiClient;
+void mqttCallback(char* topic, uint8_t* payload, unsigned int length);
 PubSubClient mqttClient(mqttBroker, mqttPort, mqttCallback, wifiClient);
 
 void setup() 
@@ -39,21 +40,25 @@ void setup()
         delay(500);
         Serial.print("Connecting to WiFi..");
     }
-    Serial.println("WiFi connected.")
+    Serial.println("WiFi connected.");
 
     if (mqttClient.connect(clientID)) {
         mqttClient.subscribe("cmd");
-        Serial.println("Connect to broker and subscribe cmd topic.")
-        char msg[20];
-        ready_msg = sprintf(msg, "%s is ready!", clientID);
-        mqttClient.publish("status", msg);
-        Serial.println("Publish ready message.")
+        Serial.println("Connect to broker and subscribe cmd topic.");
+        char topic[20];
+        sprintf(topic, "status/%s", clientID);
+        mqttClient.publish(topic, "ready");
+        Serial.println("Publish ready message.");
     } 
 }
 
-void mqttcallback(char* topic, uint8_t* payload, unsigned int length)
+void mqttCallback(char* topic, uint8_t* payload, unsigned int length)
 {
-    String msg = String(payload);
+    char* cleanPayload = (char*)malloc(length+1);
+    payload[length] = '\0';
+    memcpy(cleanPayload, payload, length+1);
+    String msg = String(cleanPayload);
+    free(cleanPayload);
     if (msg == "start") {
         sampling = true;
     }  
@@ -66,17 +71,19 @@ void loop()
         Serial.println(power_mW);
         
         if (mqttClient.connected()) {
+            char topic[20];
+            sprintf(topic, "data/%s", clientID);
             char msg[20];
             sprintf(msg, "%f", power_mW);
-            mqttClient.publish(clientID, msg);
+            mqttClient.publish(topic, msg);
         }
         else {
             if (mqttClient.connect(clientID))
                 mqttClient.subscribe("cmd");
-            Serial.println("Reconnect to broker and subscribe cmd topic.")
+            Serial.println("Reconnect to broker and subscribe cmd topic.");
         }
     }
 
-    client.loop();
+    mqttClient.loop();
     delay(pt_interval);
 }

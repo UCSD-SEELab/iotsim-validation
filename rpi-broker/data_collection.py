@@ -6,7 +6,7 @@ Save all subscribed data into certain folders.
 Work on Python 3.5.3 of Raspberry Pi Zero
 
 To start:
-	python3 data_collection.py
+    python3 data_collection.py
 
 Author: Xiaofan Yu
 Date: 11/10/2019
@@ -23,18 +23,18 @@ print("data directory is {}".format(dir_path))
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code " + str(rc))
     client.subscribe("data/#") # subscribe to all data
-    client.subscribe("status") # ready status channel
+    #client.subscribe("status") # ready status channel
 
 def on_message(client, userdata, msg):
-	# save data
-	print("Received from pi broker:" + msg.topic + " " + str(msg.payload))
-	topic = msg.topic.split('/')
-	if topic[0] == "data":
-		sourceID = topic[1]
-		file_name = dir_path + '/' + sourceID + '.txt'
-
-		with open(file_name, 'a+') as f:
-			f.write(msg.payload + '\r\n')
+    # save data
+    print("Received from pi broker:" + msg.topic + " " + str(msg.payload))
+    topic = msg.topic.split('/')
+    if topic[0] == "data":
+        sourceID = topic[1]
+        file_name = dir_path + '/' + sourceID + '.txt'
+        pt_data = msg.payload.decode('utf-8')
+        with open(file_name, 'a+') as f:
+            f.write(pt_data + '\r\n')
 
 
 broker_IP = '172.27.0.1'
