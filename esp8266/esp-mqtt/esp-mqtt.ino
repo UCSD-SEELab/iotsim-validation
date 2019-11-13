@@ -66,27 +66,30 @@ void mqttCallback(char* topic, uint8_t* payload, unsigned int length)
 
 void loop() 
 {
-    if (sampling) {
-        float power_mW = ina219.getPower_mW();
-        Serial.println(power_mW);
+    if (mqttClient.connected()) {
+        if (sampling) {
+            float power_mW = ina219.getPower_mW();
+            Serial.println(power_mW);
         
-        if (mqttClient.connected()) {
             char topic[20];
             sprintf(topic, "data/%s", clientID);
             char msg[20];
             sprintf(msg, "%f", power_mW);
             mqttClient.publish(topic, msg);
         }
-        else {
-            Serial.println("Disconnected");
-            sampling = false;
-            if (mqttClient.connect(clientID)) {
-                mqttClient.subscribe("cmd");
-                Serial.println("Connected to broker and subscribe cmd topic.");
-            }
+    }
+    else {
+        Serial.println("Disconnected");
+        sampling = false;
+        if (mqttClient.connect(clientID)) {
+            mqttClient.subscribe("cmd");
+            Serial.println("Connected to broker and subscribe cmd topic.");
+            char topic[20];
+            sprintf(topic, "status/%s", clientID);
+            mqttClient.publish(topic, "ready");
+            Serial.println("Publish ready message.");
         }
     }
-
     mqttClient.loop();
     delay(pt_interval);
 }

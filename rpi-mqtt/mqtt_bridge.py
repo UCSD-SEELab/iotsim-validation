@@ -80,7 +80,7 @@ def on_message_esp(client, userdata, msg):
 # connect to the broker of ESPs
 server_IP = '192.168.1.46' # localhost
 server_port = 61613
-client_esp = mqtt.Client()
+client_esp = mqtt.Client("Bridge")
 client_esp.connect(server_IP, server_port, 60)
 client_esp.on_connect = on_connect_esp
 client_esp.on_message = on_message_esp
