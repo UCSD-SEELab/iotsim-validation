@@ -4,6 +4,9 @@
 A plot script to visualize collected data.
 Work on Python 3 on Linux.
 
+To run, you need to specify a test case:
+    python3 plot.py original
+
 Author: Xiaofan Yu
 Date: 11/14/2019
 '''
