@@ -1,4 +1,4 @@
-# Collected data format
+# Collected data description
 
 This tutorial will walk you through the organization of experiment data from top to bottom. 
 
