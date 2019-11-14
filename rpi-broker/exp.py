@@ -34,14 +34,6 @@ def clean_data_file():
         if item.endswith('.txt'):
             os.remove(data_path + '/' + item)
 
-def set_freq(freq):
-    # freq can either be 600000 or 1200000 for 600MHz and 1200MHz
-    cmd = 'sudo bash {} {}'.format(freq_script, freq)
-    print('set freq on Bridge Pi to {} by {}'.format(freq, cmd))
-    process = subprocess.Popen("ssh {user}@{host} \'{cmd}\'".format( \
-        user='pi', host=Bridge_IP, cmd=cmd), shell=True, \
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
 def start_bridge():
     # start broker
     cmd = '/usr/local/sbin/mosquitto -c {} -p 61613 -v > {} 2>&1'.format(\
@@ -81,11 +73,11 @@ def start_esp():
     publish.single(topic='cmd', payload='start', client_id='startesp', \
         hostname=Broker_IP, port=Broker_port)
 
-def start_pi(pt_interval, fake_size, exec_time):
+def start_pi(pt_interval, input_size, output_size, exec_time):
     for Pi_IP in Pi_client:
-        cmd = 'python3 {} {} {} {} {} > {} 2>&1'.format(\
+        cmd = 'python3 {} {} {} {} {} {} > {} 2>&1'.format(\
             Pi_zero_script, Pi_IP, pt_interval, \
-            fake_size, exec_time, pi_client_log)
+            input_size, output_size, exec_time, pi_client_log)
         print('start mqtt client on pi {} by {}'.format(Pi_IP, cmd))
         process = subprocess.Popen("ssh {user}@{host} \'{cmd}\'".format( \
             user='pi', host=Pi_IP, cmd=cmd), shell=True, \

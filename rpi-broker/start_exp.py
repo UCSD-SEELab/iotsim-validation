@@ -23,10 +23,11 @@ test = 'original'
 bw = 100 # 100kbps
 
 def main():
-    if len(sys.argv) == 4:
+    if len(sys.argv) == 5:
         pt_interval = float(sys.argv[1])
-        fake_size = int(sys.argv[2])
-        exec_time = int(sys.argv[3])
+        input_size = int(sys.argv[2])
+        output_size = int(sys.argv[3])
+        exec_time = int(sys.argv[4])
 
     # preparation
     exp.clean_data_file()
@@ -45,7 +46,7 @@ def main():
     input("Press Enter to continue...")
 
     exp.start_esp()
-    exp.start_pi(pt_interval, fake_size, exec_time)
+    exp.start_pi(pt_interval, input_size, output_size, exec_time)
     exp.start_data_collection()
 
     time.sleep(exec_time + 10)

@@ -6,9 +6,10 @@ Work on Python 3.5.3 of Raspberry Pi Zero
 
 To start the client, you need to specify the IP of the client
 and the interval you want it to send power/temp. You also need to specify the 
-# of bytes to send every second. The last argument is the execution
+# of Kbytes to as input to Linear Regression, the # of Kbytes to send after LR 
+every second. The last argument is the execution
 time.
-    python3 mqtt_client.py 172.27.0.2 0.2 1000 300
+    python3 mqtt_client.py 172.27.0.2 0.2 1000 1 300
 
 Author: Xiaofan Yu
 Date: 11/8/2019
@@ -19,6 +20,7 @@ import threading
 import time
 import os
 import sys
+import lr
 ADDRESS_INA219 = 0x40 # no drop
 
 myIP = None
@@ -26,16 +28,28 @@ broker_IP = '172.27.0.1'
 broker_port = 61613
 client = None
 
-def pub_fake_data(size):
+def pub_fake_data(input_size, output_size):
     '''
     Publish certain bytes of fake date every second.
+    Note the unit for input_size and output_size are kB.
     '''
     x = threading.currentThread()
-    fake_str = 'x' * size
+
+    if input_size > 0:
+        # divide by 4
+        mylr = lr.LinearRegression(input_size >> 2, output_size >> 2)
+        a = np.random.normal(size=(1, input_size >> 2))
+
+    fake_str = 'x' * output_size * 1000
     last_time = time.time()
     while getattr(x, "do_run", True):
+        if input_size > 0:
+            mylr.run(a)
         client.publish(topic='fake', payload=fake_str)
-        time.sleep(last_time + 1.0 - time.time())
+        try:
+            time.sleep(last_time + 1.0 - time.time())
+        except Exception as e: # time overflow
+            print(e)
         last_time = time.time()
 
 def read_temp():
@@ -47,11 +61,12 @@ def main():
     module_ina219 = ina219_pi(address=ADDRESS_INA219)
 
     # parse input arguments
-    if len(sys.argv) == 5:
+    if len(sys.argv) == 6:
         myIP = str(sys.argv[1])
         pt_interval = float(sys.argv[2])
-        fake_size = int(sys.argv[3])
-        exec_time = int(sys.argv[4])
+        intput_size = int(sys.argv[3])
+        output_size = int(sys.argv[4])
+        exec_time = int(sys.argv[5])
     else:
         print('Incomplete command line arguments!')
         exit(0)
@@ -60,8 +75,9 @@ def main():
     client = mqtt.Client(myIP)
     client.connect(broker_IP, broker_port, 60)
 
-    if fake_size > 0:
-        x = threading.Thread(target=pub_fake_data, args=(fake_size,))
+    if output_size > 0:
+        x = threading.Thread(target=pub_fake_data, \
+            args=(input_size, output_size))
         x.start()
 
     # get power data and temperature data

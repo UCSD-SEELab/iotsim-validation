@@ -8,15 +8,15 @@ Each folder in this directory contains a set of collected data with specific set
 
 * **test** - a sample data set collected when all devices are in lab 2115.
 
-  Run by `python3 start_exp.py 0.2 1000 300`, meaning every client samples every 0.2s, sends 1000 bytes of fake data into the network each second, and the total experiment runs for 300s.
+  Run by `python3 start_exp.py 0.2 0 1 300`, meaning every client samples every 0.2s, sends 1 Kbytes of fake data into the network each second, and the total experiment runs for 300s.
 
 * **limit_bw** - with 100kbps limited bandwidth between each pair of Pi's.
 
-  Run by `python3 start_exp.py 0.2 1000 300`, with function `set_bw(100)` called before the experiment starts.
+  Run by `python3 start_exp.py 0.2 0 1 300`, with function `set_bw(100)` called before the experiment starts.
 
-* **lr** - run linear regression workloads (1000kB inputs) on each device continuously.
+* **lr** - run linear regression workloads (10000kB inputs, 1000bytes outputs) on each device every second.
 
-  Run by `python3 start_exp.py 0.2 1000 300`, with function `start_lr(1000)` called before the experiment starts.
+  Run by `python3 start_exp.py 0.2 1000 1 300`.
 
 * **temp** - with one device heated up by the thermal lamp, thus shows higher ambient temperature.
 
