@@ -15,7 +15,13 @@ Date: 11/10/2019
 '''
 import sys
 import exp
+import exp_set
 import time
+
+# original, limit_bw, lr, temp
+test = 'original'
+bw = 100 # 100kbps
+
 def main():
     if len(sys.argv) == 4:
         pt_interval = float(sys.argv[1])
@@ -24,9 +30,12 @@ def main():
 
     # preparation
     exp.clean_data_file()
+    # set bridge rpi3's freq to 1200MHz
+    exp_set.set_bridge_freq(1200000)
     
     # configurations
-    # set rpi3's freq to 1200MHz
+    if test == 'limit_bw':
+        exp_set.set_bw(bw)
 
     
     exp.start_bridge()
@@ -43,6 +52,10 @@ def main():
 
     exp.kill_data_collection()
     exp.kill_bridge()
+
+    # clean configurations
+    if test == 'limit_bw':
+        exp_set.reset_bw()
 
 
 

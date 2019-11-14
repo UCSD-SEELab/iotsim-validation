@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 '''
-A script containing all functions called in start_exp.py
+A script containing all functions to start experiments
 
 Author: Xiaofan Yu
 Date: 11/10/2019
@@ -20,6 +20,7 @@ data_path = '/home/pi/iotsim-validation/data/'
 Bridge_script = '/home/pi/iotsim-validation/rpi-mqtt/mqtt_bridge.py'
 Bridge_config = '/home/pi/iotsim-validation/rpi-broker/mosquitto-eth0.conf'
 Pi_zero_script = '/home/pi/iotsim-validation/rpi-mqtt/mqtt_client.py'
+freq_script = '/home/pi/iotsim-validation/script/set_freq.sh'
 
 Broker_IP = '172.27.0.1'
 Broker_port = 61613
@@ -32,6 +33,14 @@ def clean_data_file():
     for item in os.listdir(data_path):
         if item.endswith('.txt'):
             os.remove(data_path + '/' + item)
+
+def set_freq(freq):
+    # freq can either be 600000 or 1200000 for 600MHz and 1200MHz
+    cmd = 'sudo bash {} {}'.format(freq_script, freq)
+    print('set freq on Bridge Pi to {} by {}'.format(freq, cmd))
+    process = subprocess.Popen("ssh {user}@{host} \'{cmd}\'".format( \
+        user='pi', host=Bridge_IP, cmd=cmd), shell=True, \
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 def start_bridge():
     # start broker

@@ -10,9 +10,9 @@ Each folder in this directory contains a set of collected data with specific set
 
   Run by `python3 start_exp.py 0.2 1000 300`, meaning every client samples every 0.2s, sends 1000 bytes of fake data into the network each second, and the total experiment runs for 300s.
 
-* **limit_bw** - with 1000kbps limited bandwidth between each pair of Pi's.
+* **limit_bw** - with 100kbps limited bandwidth between each pair of Pi's.
 
-  Run by `python3 start_exp.py 0.2 1000 300`, with function `limit_bw(1000)` called before the experiment starts.
+  Run by `python3 start_exp.py 0.2 1000 300`, with function `set_bw(100)` called before the experiment starts.
 
 * **lr** - run linear regression workloads (1000kB inputs) on each device continuously.
 
