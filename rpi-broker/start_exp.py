@@ -19,7 +19,7 @@ import exp_set
 import time
 
 # original, limit_bw, lr, temp
-test = 'original'
+test = 'limit_bw'
 bw = 100 # 100kbps
 
 def main():
@@ -30,6 +30,8 @@ def main():
 
     # preparation
     exp.clean_data_file()
+    # time sync on all Pi's
+    exp.set_date()
     # set bridge rpi3's freq to 1200MHz
     exp_set.set_bridge_freq(1200000)
     

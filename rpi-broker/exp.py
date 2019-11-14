@@ -34,13 +34,14 @@ def clean_data_file():
         if item.endswith('.txt'):
             os.remove(data_path + '/' + item)
 
-def set_freq(freq):
-    # freq can either be 600000 or 1200000 for 600MHz and 1200MHz
-    cmd = 'sudo bash {} {}'.format(freq_script, freq)
-    print('set freq on Bridge Pi to {} by {}'.format(freq, cmd))
-    process = subprocess.Popen("ssh {user}@{host} \'{cmd}\'".format( \
-        user='pi', host=Bridge_IP, cmd=cmd), shell=True, \
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+def set_date():
+    # time sync
+    cmd = 'sudo date 0413144913'
+    for Pi_IP in Pi_client:
+        print('set time on Pi {} by {}'.format(Pi_IP, cmd))
+        process = subprocess.Popen("ssh {user}@{host} \'{cmd}\'".format( \
+            user='pi', host=Pi_IP, cmd=cmd), shell=True, \
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 def start_bridge():
     # start broker
