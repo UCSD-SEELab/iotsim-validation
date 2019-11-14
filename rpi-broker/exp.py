@@ -16,7 +16,7 @@ bridge_log = 'bridge.log'
 data_collect_log = 'data.log'
 pi_client_log = 'client.log'
 data_collect_script = '/home/pi/iotsim-validation/rpi-broker/data_collection.py'
-data_path = '/home/pi/iotsim-validation/data/' 
+data_path = '/home/pi/iotsim-validation/data/'
 Bridge_script = '/home/pi/iotsim-validation/rpi-mqtt/mqtt_bridge.py'
 Bridge_config = '/home/pi/iotsim-validation/rpi-broker/mosquitto-eth0.conf'
 Pi_zero_script = '/home/pi/iotsim-validation/rpi-mqtt/mqtt_client.py'
@@ -33,6 +33,15 @@ def clean_data_file():
     for item in os.listdir(data_path):
         if item.endswith('.txt'):
             os.remove(data_path + '/' + item)
+
+def set_date():
+    # time sync
+    cmd = 'sudo date 0413144913'
+    for Pi_IP in Pi_client:
+        print('set time on Pi {} by {}'.format(Pi_IP, cmd))
+        process = subprocess.Popen("ssh {user}@{host} \'{cmd}\'".format( \
+            user='pi', host=Pi_IP, cmd=cmd), shell=True, \
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 def start_bridge():
     # start broker
