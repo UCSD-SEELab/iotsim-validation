@@ -14,9 +14,9 @@ Each folder in this directory contains a set of collected data with specific set
 
   Run by `python3 start_exp.py 0.2 0 1 300`, with function `set_bw(100)` called before the experiment starts.
 
-* **lr** - run linear regression workloads (10000kB inputs, 1000bytes outputs) on each device every second.
+* **lr** - run linear regression workloads (100MB inputs, 10Kbytes outputs) on each device every second.
 
-  Run by `python3 start_exp.py 0.2 1000 1 300`.
+  Run by `python3 start_exp.py 0.2 100000 10 300`.
 
 * **temp** - with one device heated up by the thermal lamp, thus shows higher ambient temperature.
 
@@ -54,3 +54,5 @@ Run the `plot.py` script in this folder. You need to specify a test case, i.e. a
 ```shell
 python3 plot.py original
 ```
+
+All plots are stored in the `img` folder, with test case as their name.
