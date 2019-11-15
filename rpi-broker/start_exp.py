@@ -46,8 +46,8 @@ def main():
     exp.clean_data_file()
     # time sync on all Pi's
     exp.set_date()
-    # set bridge rpi3's freq to 1200MHz
-    exp_set.set_bridge_freq(1200000)
+    # set rpi3's freq to 1200MHz
+    exp_set.set_Pi3_freq(1200000)
     # bw settings
     exp_set.set_bw(bw)
 
