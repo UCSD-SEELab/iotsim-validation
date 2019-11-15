@@ -37,9 +37,3 @@ ifconfig bat0 $IP;
 
 # show results
 iwconfig; ifconfig;
-
-# time sync
-sudo systemctl stop systemd-timesyncd
-sudo systemctl disable systemd-timesyncd
-sudo /etc/init.d/ntp stop
-sudo /etc/init.d/ntp start

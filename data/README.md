@@ -2,7 +2,7 @@
 
 This tutorial will walk you through the organization of experiment data from top to bottom. 
 
-Each folder in this directory contains a set of collected data with specific settings (explained in [Experiment Sets](#Experiment-Sets)). There are 10 `.txt` files in each folder, recording the collected traces from each device (explained in [Devices](#Devices)). Finally, each line in a `.txt` files notes collecting time, power, temperature and delay (explained in [Data Traces](#Data-Traces)).
+Each folder in this directory contains a set of collected data with specific settings (explained in [Experiment Sets](#Experiment-Sets)). There are 10 `.txt` files in each folder, recording the collected traces from each device (explained in [Devices](#Devices)). Finally, each line in a `.txt` files notes collecting time, power, temperature and delay (explained in [Data Traces](#Data-Traces)). We also provide a script for visualization, see [Instructions for Visualization](#Instructions-for-Visualization).
 
 ## Experiment Sets
 
@@ -46,3 +46,11 @@ The data in one line in is slightly different for Pi's and ESP's, as we didn't u
   * power - this is measured by INA219, which is attached to each device.
   * temperature - on Pi, this is the internal CPU temperature returned by `vcgenmd`.
   * delay - this is the difference between collection time and the time received by the central broker.
+
+## Instructions for Visualization
+
+Run the `plot.py` script in this folder. You need to specify a test case, i.e. a folder. The following command shows an example to visualize 'original' test data.
+
+```shell
+python3 plot.py original
+```
