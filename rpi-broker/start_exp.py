@@ -18,6 +18,7 @@ import sys
 import exp
 import exp_set
 import time
+from powermeter import PowerMeter
 
 # original, limit_bw, lr, limit_bw_lr, temp_#
 test = 'original'
@@ -35,6 +36,11 @@ else:
     lr = 0
     input_size = 0
 
+# measure power of Pi broker with powermeter
+# save data to data directory
+dir_path = os.path.dirname(os.path.realpath(__file__))
+PWR_FILE = dir_path + '/../data/' + test + '/power_broker.txt'
+
 def main():
     if len(sys.argv) == 2:
     #    pt_interval = float(sys.argv[1])
@@ -50,6 +56,8 @@ def main():
     exp_set.set_Pi3_freq(1200000)
     # bw settings
     exp_set.set_bw(bw)
+    # init powermeter module
+    pm = PowerMeter(PWR_FILE)
 
     exp.start_bridge()
     print("Bridge is started. Please make sure:")
@@ -61,11 +69,13 @@ def main():
     exp.start_pi_zero(0.2, input_size, 20, exec_time)
     exp.start_pi_3(0.2, input_size, 80, exec_time)
     exp.start_data_collection(test)
+    pm.run()
 
     time.sleep(exec_time + 10)
 
     exp.kill_data_collection()
     exp.kill_bridge()
+    pm.stop()
 
     # clean bw configurations
     exp_set.reset_bw()
