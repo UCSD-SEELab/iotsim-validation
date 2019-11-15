@@ -19,16 +19,16 @@ import exp
 import exp_set
 import time
 
-# original, limit_bw, lr, temp
-test = 'lr'
+# original, limit_bw, lr, limit_bw_lr, temp_#
+test = 'original'
 
 # bw setting
-if test == 'limit_bw':
+if 'limit_bw' in test:
     bw = 100 # 100kbps=13kB/s
 else:
     bw = 10000 # 10000kbps=13MB/s
 # lr setting
-if test == 'lr':
+if 'lr' in test:
     lr = 1
     input_size = 100000 # 100MB
 else:
@@ -60,7 +60,7 @@ def main():
     exp.start_esp(lr)
     exp.start_pi_zero(0.2, input_size, 20, exec_time)
     exp.start_pi_3(0.2, input_size, 80, exec_time)
-    exp.start_data_collection()
+    exp.start_data_collection(test)
 
     time.sleep(exec_time + 10)
 
