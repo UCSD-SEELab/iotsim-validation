@@ -1,3 +1,4 @@
+
 #!/usr/bin/python3
 
 '''
@@ -30,7 +31,7 @@ def set_bw(bw):
 	        user='pi', host=Pi_IP, cmd=cmd), shell=True, \
 	        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-def reset_bw(bw):
+def reset_bw():
 	# reset all bw for wlan0 on all Pi's
 	bw_script = '/home/pi/iotsim-validation/script/reset_bw.sh'
 	cmd = 'sudo bash {}'.format(freq_script)

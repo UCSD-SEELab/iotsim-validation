@@ -13,6 +13,7 @@ Date: 11/10/2019
 '''
 import paho.mqtt.client as mqtt
 import os
+import time
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 dir_path += '/../data'
@@ -33,11 +34,14 @@ def on_message(client, userdata, msg):
         sourceID = topic[1]
         file_name = dir_path + '/' + sourceID + '.txt'
         pt_data = msg.payload.decode('utf-8')
-
-        source_time = pt_data.split(',')[0]
+        print(pt_data)
+        source_time = float(pt_data.split(',')[0])
+        print(source_time)
         delay_time = time.time() - source_time
+        print(delay_time)
 
-        pt_data.append(',' + str(delay_time))
+        pt_data += ',' + str(delay_time)
+        print(pt_data)
         with open(file_name, 'a+') as f:
             f.write(pt_data + '\r\n')
 

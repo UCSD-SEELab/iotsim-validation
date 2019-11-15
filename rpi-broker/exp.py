@@ -34,6 +34,15 @@ def clean_data_file():
         if item.endswith('.txt'):
             os.remove(data_path + '/' + item)
 
+def set_date():
+    # time sync
+    cmd = 'sudo date 0413144913'
+    for Pi_IP in Pi_client:
+        print('set time on Pi {} by {}'.format(Pi_IP, cmd))
+        process = subprocess.Popen("ssh {user}@{host} \'{cmd}\'".format( \
+            user='pi', host=Pi_IP, cmd=cmd), shell=True, \
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
 def start_bridge():
     # start broker
     cmd = '/usr/local/sbin/mosquitto -c {} -p 61613 -v > {} 2>&1'.format(\
