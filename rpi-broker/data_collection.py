@@ -34,11 +34,8 @@ def on_message(client, userdata, msg):
         sourceID = topic[1]
         file_name = dir_path + '/' + sourceID + '.txt'
         pt_data = msg.payload.decode('utf-8')
-        print(pt_data)
         source_time = float(pt_data.split(',')[0])
-        print(source_time)
         delay_time = time.time() - source_time
-        print(delay_time)
 
         pt_data += ',' + str(delay_time)
         print(pt_data)

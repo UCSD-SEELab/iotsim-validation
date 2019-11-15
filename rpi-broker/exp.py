@@ -25,7 +25,9 @@ freq_script = '/home/pi/iotsim-validation/script/set_freq.sh'
 Broker_IP = '172.27.0.1'
 Broker_port = 61613
 Bridge_IP = '172.27.0.6'
-Pi_client = ['172.27.0.1', '172.27.0.2', '172.27.0.3', '172.27.0.4', '172.27.0.5', '172.27.0.6']
+Pi_zero = ['172.27.0.2', '172.27.0.3', '172.27.0.4', '172.27.0.5']
+Pi_client = ['172.27.0.1', '172.27.0.2', '172.27.0.3', '172.27.0.4',\
+        '172.27.0.5', '172.27.0.6']
 
 def clean_data_file():
     # Note: we only want to clean the files in data directory.
@@ -77,13 +79,27 @@ def kill_bridge():
         stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
     print('result: ', stdout, stderr)
 
-def start_esp():
-    print('start esp')
+def start_esp(lr):
+    print('start esp with lr={}'.format(lr))
+    if lr:
+        publish.single(topic='cmd', payload='lr', client_id='startesp', \
+            hostname=Broker_IP, port=Broker_port)
+
     publish.single(topic='cmd', payload='start', client_id='startesp', \
         hostname=Broker_IP, port=Broker_port)
 
-def start_pi(pt_interval, input_size, output_size, exec_time):
-    for Pi_IP in Pi_client:
+def start_pi_zero(pt_interval, input_size, output_size, exec_time):
+    for Pi_IP in Pi_zero:
+        cmd = 'python3 {} {} {} {} {} {} > {} 2>&1'.format(\
+            Pi_zero_script, Pi_IP, pt_interval, \
+            input_size, output_size, exec_time, pi_client_log)
+        print('start mqtt client on pi {} by {}'.format(Pi_IP, cmd))
+        process = subprocess.Popen("ssh {user}@{host} \'{cmd}\'".format( \
+            user='pi', host=Pi_IP, cmd=cmd), shell=True, \
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+def start_pi_3(pt_interval, input_size, output_size, exec_time):
+    for Pi_IP in [Bridge_IP, Broker_IP]:
         cmd = 'python3 {} {} {} {} {} {} > {} 2>&1'.format(\
             Pi_zero_script, Pi_IP, pt_interval, \
             input_size, output_size, exec_time, pi_client_log)

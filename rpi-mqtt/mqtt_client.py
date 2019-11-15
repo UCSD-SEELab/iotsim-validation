@@ -21,6 +21,7 @@ import time
 import os
 import sys
 import lr
+import numpy as np
 ADDRESS_INA219 = 0x40 # no drop
 
 myIP = None
@@ -34,7 +35,7 @@ def pub_fake_data(input_size, output_size):
     Note the unit for input_size and output_size are kB.
     '''
     x = threading.currentThread()
-
+    print('start lr with input {}kB and output {}kB'.format(input_size, output_size))
     # covert input_size and output_size from KB to B
     input_size = input_size << 3
     output_size = output_size << 3
@@ -47,9 +48,12 @@ def pub_fake_data(input_size, output_size):
     last_time = time.time()
     while getattr(x, "do_run", True):
         if input_size > 0:
+            st = time.time()
             mylr.run(a)
+            print('Run {}'.format(time.time()-st))
         client.publish(topic='fake', payload=fake_str)
         try:
+            print(last_time + 1.0 - time.time())
             time.sleep(last_time + 1.0 - time.time())
         except Exception as e: # time overflow
             print(e)
@@ -67,7 +71,7 @@ def main():
     if len(sys.argv) == 6:
         myIP = str(sys.argv[1])
         pt_interval = float(sys.argv[2])
-        intput_size = int(sys.argv[3])
+        input_size = int(sys.argv[3])
         output_size = int(sys.argv[4])
         exec_time = int(sys.argv[5])
     else:

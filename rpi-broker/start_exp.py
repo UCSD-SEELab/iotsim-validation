@@ -20,24 +20,27 @@ import exp_set
 import time
 
 # original, limit_bw, lr, temp
-test = 'original'
+test = 'lr'
 
+# bw setting
 if test == 'limit_bw':
-    bw = 100 # 100kbps
+    bw = 100 # 100kbps=13kB/s
 else:
-    bw = 10000
+    bw = 10000 # 10000kbps=13MB/s
+# lr setting
 if test == 'lr':
-    input_size = 1000 # 1000kB
+    lr = 1
+    input_size = 100000 # 100MB
 else:
+    lr = 0
     input_size = 0
-output_size = 1 # 1kB
 
 def main():
-    if len(sys.argv) == 5:
-        pt_interval = float(sys.argv[1])
-        input_size = int(sys.argv[2])
-        output_size = int(sys.argv[3])
-        exec_time = int(sys.argv[4])
+    if len(sys.argv) == 2:
+    #    pt_interval = float(sys.argv[1])
+    #    input_size = int(sys.argv[2])
+    #    output_size = int(sys.argv[3])
+        exec_time = int(sys.argv[1])
 
     # preparation
     exp.clean_data_file()
@@ -54,8 +57,9 @@ def main():
     print("(2) All ESPs are ready with ready msgs showing up on broker.")
     input("Press Enter to continue...")
 
-    exp.start_esp()
-    exp.start_pi(pt_interval, input_size, output_size, exec_time)
+    exp.start_esp(lr)
+    exp.start_pi_zero(0.2, input_size, 20, exec_time)
+    exp.start_pi_3(0.2, input_size, 80, exec_time)
     exp.start_data_collection()
 
     time.sleep(exec_time + 10)
