@@ -19,14 +19,23 @@ const char* password = "seelab2148";
 /*MQTT server credentials*/
 const char* mqttBroker = "192.168.1.46";
 const int mqttPort = 61613;
-const char* clientID = "esp1"; // change this for different device
+const char* clientID = "esp4"; // change this for different device
 const int pt_interval = 200; // sampling power how many ms
 bool sampling = false; // power sampling status flag
+bool runlr = false; // run lr or not
+unsigned long st_time, cur_time;
+long delta;
 
 /*Declaring WiFi and mqtt client*/
 WiFiClient wifiClient;
 void mqttCallback(char* topic, uint8_t* payload, unsigned int length);
 PubSubClient mqttClient(mqttBroker, mqttPort, mqttCallback, wifiClient);
+
+/*For linear regression*/
+#define lr_in_size 256
+#define lr_out_size 32
+float lr_in[lr_in_size], lr_out[lr_out_size];
+float weights[lr_in_size][lr_out_size];
 
 void setup() 
 {
@@ -45,6 +54,7 @@ void setup()
     if (mqttClient.connect(clientID)) {
         mqttClient.subscribe("cmd");
         Serial.println("Connected to broker and subscribe cmd topic.");
+        delay(2000); // give some time for bridge to setup
         char topic[20];
         sprintf(topic, "status/%s", clientID);
         mqttClient.publish(topic, "ready");
@@ -61,11 +71,24 @@ void mqttCallback(char* topic, uint8_t* payload, unsigned int length)
     free(cleanPayload);
     if (msg == "start") {
         sampling = true;
-    }  
+    }
+    else if (msg == "lr") {
+        runlr = true;
+    }
+}
+
+void lr()
+{
+    memset(lr_out, 0, sizeof(lr_out));
+    Serial.println("Run lr!");
+    for (int i = 0; i < lr_in_size; ++i)
+        for (int j = 0; j < lr_out_size; ++j)
+            lr_out[j] += lr_in[i] * weights[i][j];
 }
 
 void loop() 
 {
+    st_time = millis();
     if (mqttClient.connected()) {
         if (sampling) {
             float power_mW = ina219.getPower_mW();
@@ -77,13 +100,24 @@ void loop()
             sprintf(msg, "%f", power_mW);
             mqttClient.publish(topic, msg);
         }
+        if (runlr) {
+            // run lr for 10 times!
+            for (int i = 0; i < 10; ++i)
+              lr();
+            char topic[10] = "fake";
+            int res = mqttClient.publish(topic, (byte *)lr_out, lr_out_size << 2);
+            // Serial.print("pub result: ");
+            // Serial.println(res);
+        }
     }
     else {
         Serial.println("Disconnected");
         sampling = false;
+        runlr = false;
         if (mqttClient.connect(clientID)) {
             mqttClient.subscribe("cmd");
             Serial.println("Connected to broker and subscribe cmd topic.");
+            delay(2000); // give some time for bridge to setup
             char topic[20];
             sprintf(topic, "status/%s", clientID);
             mqttClient.publish(topic, "ready");
@@ -91,5 +125,15 @@ void loop()
         }
     }
     mqttClient.loop();
-    delay(pt_interval);
+    cur_time = millis();
+    delta = pt_interval - (cur_time - st_time);
+    if (delta > 0) {
+        Serial.print("Remain time in ms: ");
+        Serial.println(delta);
+        delay(delta);
+    }
+    else {
+        Serial.print("Delta is less then zero:");
+        Serial.println(delta);
+    }
 }
