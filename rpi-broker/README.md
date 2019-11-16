@@ -13,7 +13,10 @@
 3. Start the experiment by running script:
 
    ```shell
-   python3 start_exp.py 0.2 1000 300
+   python3 start_exp.py <test_case> <exec_time>
    ```
 
-   Here, the first parameter refers to power & temperature sampling interval on Pi's, 0.2s in this example.  The second parameter means every Pi client will try to send 1000 bytes of fake data to broker every second. The last parameter is the total experiment time in seconds, 300s in this case.
+   Here, you need to specify the two parameters:
+   
+   * Name of test case. This will be used for creating data folder and deciding configuration parameters. Options include 'original', 'limit_bw', 'lr', 'limit_bw_lr'. For more details, check the [README](../data/README.md) for data.
+   * Total execution time for the experiment. In our tests, we use 5min (i.e. 300s) as the default length.

@@ -16,7 +16,7 @@ bridge_log = 'bridge.log'
 data_collect_log = 'data.log'
 pi_client_log = 'client.log'
 data_collect_script = '/home/pi/iotsim-validation/rpi-broker/data_collection.py'
-data_path = '/home/pi/iotsim-validation/data/' 
+data_path = '/home/pi/iotsim-validation/data/'
 Bridge_script = '/home/pi/iotsim-validation/rpi-mqtt/mqtt_bridge.py'
 Bridge_config = '/home/pi/iotsim-validation/rpi-broker/mosquitto-eth0.conf'
 Pi_zero_script = '/home/pi/iotsim-validation/rpi-mqtt/mqtt_client.py'
@@ -25,7 +25,9 @@ freq_script = '/home/pi/iotsim-validation/script/set_freq.sh'
 Broker_IP = '172.27.0.1'
 Broker_port = 61613
 Bridge_IP = '172.27.0.6'
-Pi_client = ['172.27.0.1', '172.27.0.2', '172.27.0.3', '172.27.0.4', '172.27.0.5', '172.27.0.6']
+Pi_zero = ['172.27.0.2', '172.27.0.3', '172.27.0.4', '172.27.0.5']
+Pi_client = ['172.27.0.1', '172.27.0.2', '172.27.0.3', '172.27.0.4',\
+        '172.27.0.5', '172.27.0.6']
 
 def clean_data_file():
     # Note: we only want to clean the files in data directory.
@@ -51,7 +53,7 @@ def start_bridge():
     process = subprocess.Popen("ssh {user}@{host} \'{cmd}\'".format( \
         user='pi', host=Bridge_IP, cmd=cmd), shell=True, \
         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
+    time.sleep(2) # wait for bridge broker to setup
     # start bridging script
     cmd = 'python3 {} > {} 2>&1'.format(Bridge_script, bridge_log)
     print('start bridging script on bridge by {}'.format(cmd))
@@ -77,13 +79,17 @@ def kill_bridge():
         stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
     print('result: ', stdout, stderr)
 
-def start_esp():
-    print('start esp')
+def start_esp(lr):
+    print('start esp with lr={}'.format(lr))
+    if lr:
+        publish.single(topic='cmd', payload='lr', client_id='startesp', \
+            hostname=Broker_IP, port=Broker_port)
+
     publish.single(topic='cmd', payload='start', client_id='startesp', \
         hostname=Broker_IP, port=Broker_port)
 
-def start_pi(pt_interval, input_size, output_size, exec_time):
-    for Pi_IP in Pi_client:
+def start_pi_zero(pt_interval, input_size, output_size, exec_time):
+    for Pi_IP in Pi_zero:
         cmd = 'python3 {} {} {} {} {} {} > {} 2>&1'.format(\
             Pi_zero_script, Pi_IP, pt_interval, \
             input_size, output_size, exec_time, pi_client_log)
@@ -92,9 +98,19 @@ def start_pi(pt_interval, input_size, output_size, exec_time):
             user='pi', host=Pi_IP, cmd=cmd), shell=True, \
             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-def start_data_collection():
-    cmd = 'python3 {} > {} 2>&1'.format(data_collect_script, \
-        data_collect_log)
+def start_pi_3(pt_interval, input_size, output_size, exec_time):
+    for Pi_IP in [Bridge_IP, Broker_IP]:
+        cmd = 'python3 {} {} {} {} {} {} > {} 2>&1'.format(\
+            Pi_zero_script, Pi_IP, pt_interval, \
+            input_size, output_size, exec_time, pi_client_log)
+        print('start mqtt client on pi {} by {}'.format(Pi_IP, cmd))
+        process = subprocess.Popen("ssh {user}@{host} \'{cmd}\'".format( \
+            user='pi', host=Pi_IP, cmd=cmd), shell=True, \
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+def start_data_collection(test_case):
+    cmd = 'python3 {} {} > {} 2>&1'.format(data_collect_script, \
+        test_case, data_collect_log)
     print('start data_collection by {}.'.format(cmd))
     process = subprocess.Popen(cmd, shell=True)
 

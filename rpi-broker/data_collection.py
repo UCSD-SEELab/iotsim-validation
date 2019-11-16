@@ -5,20 +5,20 @@ A data collection script running on RPi broker.
 Save all subscribed data into certain folders.
 Work on Python 3.5.3 of Raspberry Pi Zero
 
-To start:
-    python3 data_collection.py
+To run, please specify a test case. The script will create a folder in `data`
+to store traces if there is no such directory.
+    python3 data_collection.py original
 
 Author: Xiaofan Yu
 Date: 11/10/2019
 '''
 import paho.mqtt.client as mqtt
 import os
+import sys
 import time
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
-dir_path += '/../data'
-print("data directory is {}".format(dir_path))
-
+dir_path += '/../data/'
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
@@ -34,23 +34,35 @@ def on_message(client, userdata, msg):
         sourceID = topic[1]
         file_name = dir_path + '/' + sourceID + '.txt'
         pt_data = msg.payload.decode('utf-8')
-        print(pt_data)
         source_time = float(pt_data.split(',')[0])
-        print(source_time)
         delay_time = time.time() - source_time
-        print(delay_time)
 
         pt_data += ',' + str(delay_time)
         print(pt_data)
         with open(file_name, 'a+') as f:
             f.write(pt_data + '\r\n')
 
+def main():
+    if len(sys.argv) >= 2:
+        test_case = sys.argv[1]
+    else:
+        print('Please specify the test case!')
+        exit(0)
 
-broker_IP = '172.27.0.1'
-broker_port = 61613
+    global dir_path
+    dir_path += test_case
+    if not os.path.exists(dir_path):
+        os.makedirs(dir_path)
+    print("data directory is {}".format(dir_path))
 
-client = mqtt.Client("data_collection")
-client.connect(broker_IP, broker_port, 60)
-client.on_connect = on_connect
-client.on_message = on_message
-client.loop_forever() # nonblocking version
+    broker_IP = '172.27.0.1'
+    broker_port = 61613
+
+    client = mqtt.Client("data_collection")
+    client.connect(broker_IP, broker_port, 60)
+    client.on_connect = on_connect
+    client.on_message = on_message
+    client.loop_forever() # nonblocking version
+
+if __name__ == '__main__':
+    main()
