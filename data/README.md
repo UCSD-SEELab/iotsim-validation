@@ -2,29 +2,42 @@
 
 This tutorial will walk you through the organization of experiment data from top to bottom. 
 
-Each folder in this directory contains a set of collected data with specific settings (explained in [Experiment Sets](#Experiment-Sets)). There are 10 `.txt` files in each folder, recording the collected traces from each device (explained in [Devices](#Devices)). Finally, each line in a `.txt` files notes collecting time, power, temperature and delay (explained in [Data Traces](#Data-Traces)). We also provide a script for visualization, see [Instructions for Visualization](#Instructions-for-Visualization).
+Each folder in this directory contains a set of collected data with specific settings (explained in [Experiment Sets](#Experiment-Sets)). There are 11 `.txt` files in each folder, recording the collected traces from each device and an additional file from powermeter (explained in [Devices](#Devices)). Finally, each line in a `.txt` files notes collecting time, power, temperature and delay (explained in [Data Traces](#Data-Traces)). We also provide a script for visualization, see [Instructions for Visualization](#Instructions-for-Visualization).
 
 ## Experiment Sets
 
-* **test** - a sample data set collected when all devices are in lab 2115.
+* **test_old** - a sample data set collected when all devices are in lab 2115.
 
-  Run by `python3 start_exp.py 0.2 0 1 300`, meaning every client samples every 0.2s, sends 1 Kbytes of fake data into the network each second, and the total experiment runs for 300s.
+  In the old experiment setting, every client samples power and/or temperature every 0.2s, sends 1 Kbytes of fake data into the network each second, and the total experiment runs for 300s.
 
-* **limit_bw** - with 100kbps limited bandwidth between each pair of Pi's.
+* **original_old** - setup the network in 2nd floor of CSE building. Power & temperature sampling interval is 0.2s,  with 1kB of fake data sending from every Pi in each second. The total running time is 300s. There is no bandwidth limitation in this case.
 
-  Run by `python3 start_exp.py 0.2 0 1 300`, with function `set_bw(100)` called before the experiment starts.
+* **limit_bw_old** - same setting as **original_old**, with 100kbps limited bandwidth between each pair of Pi's.
 
-* **lr** - run linear regression workloads (100MB inputs, 10Kbytes outputs) on each device every second.
+* **original_1/2** - setup the network in 2nd floor of CSE building . Power & temperature sampling is 0.2s, with 80kB fake data sending from Pi3's and 20kB fake data sending from Pi zero's in each second. Total experiment time is 300s. In this case, there is a 1.25MB/s (10Mbps) bandwidth limitation on each Pi's Wi-Fi adapter. 
 
-  Run by `python3 start_exp.py 0.2 100000 10 300`.
+* **original_no_bw_1/2** - same setting as **original_1/2** but without the bandwidth setting.
 
-* **temp** - with one device heated up by the thermal lamp, thus shows higher ambient temperature.
+* **limit_bw_1/2** - same setting as **original_1/2**, while the only difference is the bandwidth limitation here is set to 12.5kB/s (100kbps).
+
+* **lr_1/2** - same setting as **original_1/2**, while the only difference is, each device (all Pi's and ESP's) are running certain Linear Regression workloads.
+
+  * For Pi 3, the LR workload is triggered each second, with 100MB input data and 80kB output data. Outputs are sent through MQTT to the central Pi broker after the computation finishes. Each run takes approximately 0.5s in the 1s interval.
+  * For Pi zero, similarly, the LR workload is fired each second, with 100MB input data and 20kB output. Outputs are forwarded through MQTT to the central Pi broker after the computation finishes. Each run takes approximately 0.58s on Pi zero in its 1s interval.
+  * For ESP8266, due to memory limitation, the LR could only takes 256 floats and output 32 floats. In each 200ms interval, such LR is run for 10 times, costing approximately 90ms in 200ms.
+
+* **limit_bw_lr_1/2** - use bandwidth setting in **limit_bw_1/2**, linear regression setting in **lr_1/2**. The rest settings are the same as **original_1/2**.
+
+* **temp_2_1/2** - same setting as **original_1/2**, while one of the major node on the path, i.e. Pi zero with 172.27.0.2, is being heated thus its ambient temperature increases to xx°C.
+
+* **temp_3_1/3** - same setting as **original_1/2**, while one of the major node on the path, i.e. Pi zero with 172.27.0.3, is being heated thus its ambient temperature increases to xx°C.
 
 ## Devices
 
 * 172.27.0.1 - this is a Raspberry Pi 3B+ running the central broker. **Note that the power data in this file is wrong.** I don't know why, no matter changing the power wire or another INA219 current sensor, this Pi keeps giving power of less than 1W.
 * 172.27.0.2 - 172.27.0.5 - these are Raspberry Pi zeros acting as normal mesh nodes in the network.
 * 172.27.0.6 - this is a Raspberry Pi 3B+. Same as RPi zeros, this Pi is also a client connecting to the central broker as a normal mesh node. At the same time, it also serves as a bridge forwarding all data from ESP8266s to the central broker.
+* power_broker.txt - this is an additional file generated by power meter, which is recording the power traces of the central Pi broker (i.e. 172.27.0.1). The reason for using this is that the power measurement of INA219 on the central Pi broker is obviously wrong. So this is an alternative way to obtain accurate power trace on this particular device.
 
 ## Data Traces
 
