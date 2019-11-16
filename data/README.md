@@ -28,9 +28,9 @@ Each folder in this directory contains a set of collected data with specific set
 
 * **limit_bw_lr_1/2** - use bandwidth setting in **limit_bw_1/2**, linear regression setting in **lr_1/2**. The rest settings are the same as **original_1/2**.
 
-* **temp_2_1/2** - same setting as **original_1/2**, while one of the major node on the path, i.e. Pi zero with 172.27.0.2, is being heated thus its ambient temperature increases to xx°C.
+* **heat_2_1/2** - same setting as **original_1/2**, while one of the major node on the path, i.e. Pi zero with 172.27.0.2, is being heated thus its ambient temperature increases to 38.4°C, while the normal ambient temperature is 23°C. The core temperature of that Pi zero before running the test is 47°C.
 
-* **temp_3_1/3** - same setting as **original_1/2**, while one of the major node on the path, i.e. Pi zero with 172.27.0.3, is being heated thus its ambient temperature increases to xx°C.
+* **heat_3_1/3** - same setting as **original_1/2**, while one of the major node on the path, i.e. Pi zero with 172.27.0.3, is being heated thus its ambient temperature increases to 38.5°C and its core temperature is around 47.1°C before the test starts.
 
 ## Devices
 
