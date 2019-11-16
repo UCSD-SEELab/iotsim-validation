@@ -14,6 +14,7 @@ running experiment for 300s.
 Author: Xiaofan Yu
 Date: 11/10/2019
 '''
+import os
 import sys
 import exp
 import exp_set
@@ -21,33 +22,37 @@ import time
 from powermeter import PowerMeter
 
 # original, limit_bw, lr, limit_bw_lr, temp_#
-test = 'original'
-
-# bw setting
-if 'limit_bw' in test:
-    bw = 100 # 100kbps=13kB/s
-else:
-    bw = 10000 # 10000kbps=13MB/s
-# lr setting
-if 'lr' in test:
-    lr = 1
-    input_size = 100000 # 100MB
-else:
-    lr = 0
-    input_size = 0
-
-# measure power of Pi broker with powermeter
-# save data to data directory
-dir_path = os.path.dirname(os.path.realpath(__file__))
-PWR_FILE = dir_path + '/../data/' + test + '/power_broker.txt'
+# test = 'original'
 
 def main():
-    if len(sys.argv) == 2:
+    if len(sys.argv) == 3:
     #    pt_interval = float(sys.argv[1])
     #    input_size = int(sys.argv[2])
     #    output_size = int(sys.argv[3])
-        exec_time = int(sys.argv[1])
+        test = sys.argv[1]
+        exec_time = int(sys.argv[2])
+    else:
+        print('Incorrect number of input arguments!')
+        exit(0)
 
+    # bw setting
+    if 'limit_bw' in test:
+        bw = 100 # 100kbps=13kB/s
+    else:
+        bw = 10000 # 10000kbps=1.3MB/s
+    # lr setting
+    if 'lr' in test:
+        lr = 1
+        input_size = 100000 # 100MB
+    else:
+        lr = 0
+        input_size = 0
+
+    # measure power of Pi broker with powermeter
+    # save data to data directory
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    PWR_FILE = dir_path + '/../data/' + test + '/power_broker.txt'
+    
     # preparation
     exp.clean_data_file()
     # time sync on all Pi's
@@ -55,7 +60,8 @@ def main():
     # set rpi3's freq to 1200MHz
     exp_set.set_Pi3_freq(1200000)
     # bw settings
-    exp_set.set_bw(bw)
+    if not 'no_bw' in test:
+        exp_set.set_bw(bw)
     # init powermeter module
     pm = PowerMeter(PWR_FILE)
 
@@ -69,6 +75,7 @@ def main():
     exp.start_pi_zero(0.2, input_size, 20, exec_time)
     exp.start_pi_3(0.2, input_size, 80, exec_time)
     exp.start_data_collection(test)
+    time.sleep(2)
     pm.run()
 
     time.sleep(exec_time + 10)

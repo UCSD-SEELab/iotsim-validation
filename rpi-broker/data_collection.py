@@ -17,6 +17,9 @@ import os
 import sys
 import time
 
+dir_path = os.path.dirname(os.path.realpath(__file__))
+dir_path += '/../data/'
+
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code " + str(rc))
@@ -46,8 +49,8 @@ def main():
         print('Please specify the test case!')
         exit(0)
 
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-    dir_path += '/../data/' + test_case
+    global dir_path
+    dir_path += test_case
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
     print("data directory is {}".format(dir_path))

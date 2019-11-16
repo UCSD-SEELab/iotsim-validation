@@ -53,7 +53,7 @@ def start_bridge():
     process = subprocess.Popen("ssh {user}@{host} \'{cmd}\'".format( \
         user='pi', host=Bridge_IP, cmd=cmd), shell=True, \
         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
+    time.sleep(2) # wait for bridge broker to setup
     # start bridging script
     cmd = 'python3 {} > {} 2>&1'.format(Bridge_script, bridge_log)
     print('start bridging script on bridge by {}'.format(cmd))
@@ -108,9 +108,9 @@ def start_pi_3(pt_interval, input_size, output_size, exec_time):
             user='pi', host=Pi_IP, cmd=cmd), shell=True, \
             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-def start_data_collection():
-    cmd = 'python3 {} > {} 2>&1'.format(data_collect_script, \
-        data_collect_log)
+def start_data_collection(test_case):
+    cmd = 'python3 {} {} > {} 2>&1'.format(data_collect_script, \
+        test_case, data_collect_log)
     print('start data_collection by {}.'.format(cmd))
     process = subprocess.Popen(cmd, shell=True)
 
