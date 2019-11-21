@@ -69,6 +69,12 @@ def run_lr(in_kB, out_kB, times):
     print('result: ', stdout, stderr)
     return stdout
 
+def log(str):
+    print(str)
+    with open('./result.txt'. 'a+') as f:
+       f.write(str)
+       f.write('\n')
+
 def main():
     '''
     Fire workload, measure avg. power and apply to 4 candidate regressions.
@@ -88,9 +94,9 @@ def main():
         avgPower.append(this_power)
         print(this_time, this_mac, this_power)
 
-    print(mac)
-    print(avgPower)
-    print(execTime)
+    log('mac: {}'.format(mac))
+    log('mac: {}'.format(avgPower))
+    log('mac: {}'.format(execTime))
     # try to fit
     ModelFit = ModelFitting()
     X = np.array(mac)
@@ -99,12 +105,12 @@ def main():
     for model in REG_MODEL:
         popt1, mse1 = ModelFit.fit(X, Y1, model)
         popt2, mse2 = ModelFit.fit(X, Y2, model)
-        print('fit model {} for power'.format(model))
-        print('popt: ', popt1)
-        print('mse: ', mse1)
-        print('fit model {} for time'.format(model))
-        print('popt: ', popt2)
-        print('mape: ', mse2)
+        log('fit model {} for power'.format(model))
+        log('popt: ', popt1)
+        log('mse: ', mse1)
+        log('fit model {} for time'.format(model))
+        log('popt: ', popt2)
+        log('mape: ', mse2)
 
 
 
