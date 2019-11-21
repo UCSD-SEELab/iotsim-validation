@@ -56,6 +56,23 @@ class ModelFitting:
         MSE = np.square(np.subtract(X, Y)).mean()
         return MSE
 
+    def MAPE(self, X, Y):
+        '''
+        Compute the mean absolute percentage error of X and Y
+
+        Args:
+            X, Y (n*1 float array): two arrays to compare
+
+        Returns:
+            MAPE (float): mean absolute percentage error
+        '''
+        X, Y = np.array(X), np.array(Y)
+        assert(X.shape == Y.shape), "MSE: X and Y does not match!"
+
+        abs_err = np.absolute(np.subtract(X, Y))
+        MAPE = np.divide(abs_err, X).mean()
+        return MAPE
+
     def fit_linear(self, data_size, value):
         '''
         Try to fit the value-input data size model with Linear Regression
@@ -67,7 +84,7 @@ class ModelFitting:
 
         Returns:
             popt (float array): opt. coefficients
-            mse (float): Mean Square Error
+            MAPE (float): mean absolute percentage error
         '''
         data_size, value = np.array(data_size), np.array(value)
         assert (data_size.shape[0] == value.shape[0]), \
@@ -79,8 +96,8 @@ class ModelFitting:
 
         popt = [lg.coef_, lg.intercept_]
         predict = lg.predict(data_size)
-        mse = self.MSE(value, predict)
-        return popt, mse
+        mape = self.MAPE(value, predict)
+        return popt, mape
 
     def fit_poly(self, data_size, value):
         '''
@@ -93,7 +110,7 @@ class ModelFitting:
 
         Returns:
             popt (float array): opt. coefficients
-            mse (float): Mean Square Error
+            MAPE (float): mean absolute percentage error
         '''
         data_size, value = np.array(data_size), np.array(value)
         assert (data_size.shape[0] == value.shape[0]), \
@@ -107,8 +124,8 @@ class ModelFitting:
 
         popt = [lg.coef_, lg.intercept_]
         predict = lg.predict(dsize_)
-        mse = self.MSE(value, predict)
-        return popt, mse
+        mape = self.MAPE(value, predict)
+        return popt, mape
 
     def fit_exp(self, data_size, value):
         '''
@@ -121,7 +138,7 @@ class ModelFitting:
 
         Returns:
             popt (float array): opt. coefficients
-            mse (float): Mean Square Error
+            MAPE (float): mean absolute percentage error
         '''
         def exp_func(x, a, b, c):
             return a * np.exp(b * x) + c
@@ -132,9 +149,9 @@ class ModelFitting:
 
         popt, _ = curve_fit(exp_func, data_size, value)
 
-        predict = exp_func(data_size, *spopt)
-        mse = self.MSE(value, predict)
-        return popt, mse
+        predict = exp_func(data_size, *popt)
+        mape = self.MAPE(value, predict)
+        return popt, mape
 
     def fit_log(self, data_size, value):
         '''
@@ -147,7 +164,7 @@ class ModelFitting:
 
         Returns:
             popt (float array): opt. coefficients
-            mse (float): Mean Square Error
+            MAPE (float): mean absolute percentage error
         '''
         def log_func(x, a, b, c):
             return a * np.log(x + b) + c
@@ -159,8 +176,8 @@ class ModelFitting:
         popt, _ = curve_fit(log_func, data_size, value)
 
         predict = log_func(data_size, *popt)
-        mse = self.MSE(value, predict)
-        return popt, mse
+        mape = self.MAPE(value, predict)
+        return popt, mape
 
 
 def main():
@@ -170,7 +187,7 @@ def main():
     print(X.shape)
     Y = np.array([2.0, 4.0, 8.0, 16.0])
     print(Y.shape)
-    popt, mse = ModelFit.fit(Y, X, 'log')
+    popt, mse = ModelFit.fit(X, Y, 'linear')
     print(popt)
     print(mse)
 
