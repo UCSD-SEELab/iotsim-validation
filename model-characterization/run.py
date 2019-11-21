@@ -103,8 +103,9 @@ def main():
     Y1 = np.array(avgPower)
     Y2 = np.array(execTime)
     for model in REG_MODEL:
-        popt1, mse1 = ModelFit.fit(X, Y1, model)
-        popt2, mse2 = ModelFit.fit(X, Y2, model)
+        # case can be power3b, time3b, power0, time0
+        popt1, mse1 = ModelFit.fit(X, Y1, model, 'power3b')
+        popt2, mse2 = ModelFit.fit(X, Y2, model, 'time3b')
         log('fit model {} for power'.format(model))
         log('popt: ', popt1)
         log('mse: ', mse1)

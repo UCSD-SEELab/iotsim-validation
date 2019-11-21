@@ -24,19 +24,20 @@ class ModelFitting:
                 'log': self.fit_log
             }
 
-    def fit(self, X, Y, mode):
+    def fit(self, X, Y, mode, case):
         '''
         General fitting function for all avaiable models
 
         Args:
             X, Y: data set to fit
             mode: the model to use
+            case: a string variable indicate fitting power or exec. time
 
         Returns:
             The return value of the selected fitting function.
         '''
         if mode in self.model.keys():
-            return self.model[mode](X, Y)
+            return self.model[mode](X, Y, case)
         else:
             raise Exception("No match model!")
 
@@ -73,7 +74,7 @@ class ModelFitting:
         MAPE = np.divide(abs_err, X).mean()
         return MAPE
 
-    def fit_linear(self, data_size, value):
+    def fit_linear(self, data_size, value, case):
         '''
         Try to fit the value-input data size model with Linear Regression
         The value here can be avg power or exec. time.
@@ -97,9 +98,10 @@ class ModelFitting:
         popt = [lg.coef_, lg.intercept_]
         predict = lg.predict(data_size)
         mape = self.MAPE(value, predict)
+        plot('linear', data_size, value, predict, case)
         return popt, mape
 
-    def fit_poly(self, data_size, value):
+    def fit_poly(self, data_size, value, case):
         '''
         Try to fit the value-input data size model with Polynomial Regression
         The value here can be avg power or exec. time.
@@ -125,9 +127,10 @@ class ModelFitting:
         popt = [lg.coef_, lg.intercept_]
         predict = lg.predict(dsize_)
         mape = self.MAPE(value, predict)
+        plot('poly', data_size, value, predict, case)
         return popt, mape
 
-    def fit_exp(self, data_size, value):
+    def fit_exp(self, data_size, value, case):
         '''
         Try to fit the value-input data size model with Exponential Regression
         The value here can be avg power or exec. time.
@@ -151,9 +154,10 @@ class ModelFitting:
 
         predict = exp_func(data_size, *popt)
         mape = self.MAPE(value, predict)
+        plot('exp', data_size, value, predict, case)
         return popt, mape
 
-    def fit_log(self, data_size, value):
+    def fit_log(self, data_size, value, case):
         '''
         Try to fit the value-input data size model with Log Regression
         The value here can be avg power or exec. time.
@@ -177,8 +181,31 @@ class ModelFitting:
 
         predict = log_func(data_size, *popt)
         mape = self.MAPE(value, predict)
+        plot('log', data_size, value, predict, case)
         return popt, mape
 
+def plot(model, X, Y, predict, case):
+    X = np.divide(X, 1000000) # normalize to M mac operations
+    fig, ax = plt.subplots(figsize=(5.5, 4))
+    ax.plot(X, Y, 'b.', label='Measurement')
+    ax.plot(X, predict, 'r-', label='Simulation')
+    ax.legend()
+    ax.grid(True)
+    ax.set_xlabel('MAC Operations (M)')
+    if case == 'power3b':
+        ax.set_title('Power Estimation on Raspberry Pi 3B')
+        ax.set_ylabel('Power (W)')
+    elif case == 'time3b':
+        ax.set_title('Exection Time Estimation on Raspberry Pi 3B')
+        ax.set_ylabel('Exection Time (s)')
+    elif case == 'power0':
+        ax.set_title('Power Estimation on Raspberry Pi Zero')
+        ax.set_ylabel('Power (W)')
+    elif case == 'time0':
+        ax.set_title('Exection Time Estimation on Raspberry Pi Zero')
+        ax.set_ylabel('Exection Time (s)')
+    pic_name = case + '_' + model + 'png'
+    plt.savefig(pic_name, dpi=300)
 
 def main():
     ModelFit = ModelFitting()
@@ -187,7 +214,7 @@ def main():
     print(X.shape)
     Y = np.array([2.0, 4.0, 8.0, 16.0])
     print(Y.shape)
-    popt, mse = ModelFit.fit(X, Y, 'linear')
+    popt, mse = ModelFit.fit(X, Y, 'linear', 'power3b')
     print(popt)
     print(mse)
 
