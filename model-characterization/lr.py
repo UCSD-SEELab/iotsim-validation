@@ -40,7 +40,7 @@ if __name__ == '__main__':
     Run inference of certain input size for certain times.
     '''
     # parse the parameters
-    parser = argparse.ArguimentParse(description='Run Linear Regression \
+    parser = argparse.ArgumentParser(description='Run Linear Regression \
             with specified input size for certain times.')
     parser.add_argument('-i', '--input', type=int, dest='input', \
             help='Input data size in kB.')
@@ -51,11 +51,11 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    # convert Byte to number of floats
-    in_size = args.input >> 3
-    out_size = args.output >> 3
+    # convert KByte to number of floats, << 3 then >> 2
+    in_size = args.input << 1
+    out_size = args.output << 1
     lr = LinearRegression(in_size, out_size)
-    a = np.random.normal(size=(out_size, in_size))
+    a = np.random.normal(size=(1, in_size))
 
     st_time = time.time()
     for i in range(args.times):
