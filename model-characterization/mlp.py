@@ -84,7 +84,7 @@ def main():
     parser.add_argument('-p', '--path', type=str, dest='path', \
             help='The path of the image.')
     parser.add_argument('-t', '--times', type=int, dest='times', default=1, \
-            help='Number of times to run inference')
+            help='Number of times to run inference.')
 
     args = parser.parse_args()
 
