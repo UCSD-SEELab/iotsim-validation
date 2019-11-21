@@ -168,3 +168,9 @@ venv.bak/
 
 # models
 *.sav
+
+# photon bin files and testing files
+*.bin
+
+# all logs
+*.log
