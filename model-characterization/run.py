@@ -46,11 +46,11 @@ def run_mlp(hidden_layer, times):
     hidden_layer: a list showing the # of units in each hidden layer
     '''
     hidden_layer = [str(i) for i in hidden_layer] # convert to string element
-    cmd = 'python3 mlp.py -m infer -l {} -p ./output.jpg -t {}'.format(\
+    cmd = 'python3 mlp.py -m infer -l {} -p ./output.jpg -t {}'.format( \
             ' '.join(hidden_layer), times)
     print('Run MLP of hidden layer {} for {} times with {}'.format(, \
             hidden_layer, times, cmd))
-    stdout, stderr = subprocess.Popen("ssh pi@{host} \'{cmd}\'".format(\
+    stdout, stderr = subprocess.Popen("ssh pi@{host} \'{cmd}\'".format( \
             host=Pi_IP, cmd=cmd), shell=True, \
             stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
     print('result: ', stdout, stderr)
@@ -63,11 +63,21 @@ def run_lr(in_kB, out_kB, times):
     cmd = 'python3 lr.py -i {} -o {} -t {}'.format(in_kB, out_kB, times)
     print('Run LR of input {} kB and output {} kB for {} times with \
             {}'.format(in_kB, out_kB, times, cmd))
-    stdout, stderr = subprocess.Popen("ssh pi@{host} \'{cmd}\'".format(\
+    stdout, stderr = subprocess.Popen("ssh pi@{host} \'{cmd}\'".format( \
             host=Pi_IP, cmd=cmd), shell=True, \
             stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
     print('result: ', stdout, stderr)
     return stdout
+
+def set_Pi3_freq(freq):
+    # freq can either be 600000 or 1200000 for 600MHz and 1200MHz
+    freq_script = '/home/pi/iotsim-validation/script/set_freq.sh'
+    for Pi_IP in Pi_3:
+        cmd = 'sudo bash {} {}'.format(freq_script, freq)
+        print('set freq on Pi {} to {} by {}'.format(Pi_IP, freq, cmd))
+        process = subprocess.Popen("ssh pi@{host} \'{cmd}\'".format( \
+            host=Pi_IP, cmd=cmd), shell=True, \
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 def log(str):
     print(str)
@@ -79,6 +89,8 @@ def main():
     '''
     Fire workload, measure avg. power and apply to 4 candidate regressions.
     '''
+    # fix frequency to 1200MHz
+    set_Pi3_freq(1200000)
     # for MLP
     times = 10
     mac, avgPower, execTime = [], [], []
