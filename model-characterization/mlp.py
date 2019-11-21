@@ -24,7 +24,8 @@ def read_img(img_path):
     The input image should be (128, 128, 3)
     while will be resize into (1, 49152)
     '''
-    X = plt.imread(img_path)
+    #X = plt.imread(img_path)
+    X = np.random.normal(size=(128, 128))
     X = X.reshape((1, -1))
     # print(X.shape)
     return X
@@ -42,6 +43,7 @@ def train_model(img_path, hidden_layer):
     model_name = './models/{}-{}.sav'.format(X.shape, hidden_layer)
     pickle.dump(clf, open(model_name, 'wb'))
     print('Train model and save to {}'.format(model_name))
+    print('MAC operations: {}'.format(MAC(img_path, hidden_layer, 1)))
 
 def infer(img_path, hidden_layer):
     '''

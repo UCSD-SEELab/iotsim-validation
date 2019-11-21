@@ -14,8 +14,8 @@ from fit_model import ModelFitting
 
 PWR_FILE = './power.txt'
 Pi_IP = '192.168.1.62'
-MLP_LAYERS = [[14], [24, 16], [40, 32], [50, 32], [64, 32], [76, 32], \
-        [92, 32], [104, 64], [118, 64], [132, 64]]
+MLP_LAYERS = [[6], [12], [18], [24, 8], [31, 16], [37, 16], [43, 16], \
+        [49, 16], [55, 32], [64, 32]
 REG_MODEL = ['linear', 'poly', 'exp', 'log']
 
 def pwr_callback(pwr):
