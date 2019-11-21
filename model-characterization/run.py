@@ -46,7 +46,8 @@ def run_mlp(hidden_layer, times):
     hidden_layer: a list showing the # of units in each hidden layer
     '''
     hidden_layer = [str(i) for i in hidden_layer] # convert to string element
-    cmd = 'python3 mlp.py -m infer -l {} -p ./output.jpg -t {}'.format( \
+    cmd = 'python3 /home/pi/iotsim-validation/model-characterization/mlp.py \
+            -m infer -l {} -p ./output.jpg -t {}'.format( \
             ' '.join(hidden_layer), times)
     print('Run MLP of hidden layer {} for {} times with {}'.format(, \
             hidden_layer, times, cmd))
@@ -60,7 +61,8 @@ def run_lr(in_kB, out_kB, times):
     '''
     input and output are in units of kB
     '''
-    cmd = 'python3 lr.py -i {} -o {} -t {}'.format(in_kB, out_kB, times)
+    cmd = 'python3 /home/pi/iotsim-validation/model-characterization/lr.py \
+            -i {} -o {} -t {}'.format(in_kB, out_kB, times)
     print('Run LR of input {} kB and output {} kB for {} times with \
             {}'.format(in_kB, out_kB, times, cmd))
     stdout, stderr = subprocess.Popen("ssh pi@{host} \'{cmd}\'".format( \
