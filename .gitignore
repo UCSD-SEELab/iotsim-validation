@@ -166,3 +166,5 @@ venv.bak/
 # Vim swaps
 *.sw*
 
+# models
+*.sav

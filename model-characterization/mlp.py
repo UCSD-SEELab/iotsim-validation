@@ -26,7 +26,7 @@ def read_img(img_path):
     '''
     X = plt.imread(img_path)
     X = X.reshape((1, -1))
-    print(X.shape)
+    # print(X.shape)
     return X
 
 def train_model(img_path, hidden_layer):
@@ -64,7 +64,7 @@ def MAC(img_path, hidden_layer, output_size):
     l = [input_size]
     l.extend(list(hidden_layer))
     l.append(output_size)
-    print(l)
+    # print(l)
     mac = 0
     for i in range(len(l)-1):
         mac += l[i]*l[i+1]
@@ -83,12 +83,12 @@ def main():
             help='Specify the number of nodes in each hidden layer.')
     parser.add_argument('-p', '--path', type=str, dest='path', \
             help='The path of the image.')
-    parser.add_argument('-t', '--times', type=int, dest='times', default=1\
+    parser.add_argument('-t', '--times', type=int, dest='times', default=1, \
             help='Number of times to run inference')
 
     args = parser.parse_args()
 
-    print(args.mode, args.layer, args.path)
+    # print(args.mode, args.layer, args.path)
     if args.mode == 'train':
         hidden_layer = tuple(args.layer)
         train_model(args.path, hidden_layer)
