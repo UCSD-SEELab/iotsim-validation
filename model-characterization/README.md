@@ -54,14 +54,21 @@
 1. Installation on Raspberry Pi.
 
    ```shell
-   pip3 install scikit-learn
+   sudo apt-get install gfortran libgfortran3 libatlas-base-dev libopenblas-dev liblapack-dev -y
+   sudo pip3 install scikit-learn
    ```
 
 2. Other required modules: `matplotlib` and `numpy`:
 
    ```shell
-   pip3 install matplotlib
-   pip3 install numpy
+   sudo pip3 install matplotlib
+   sudo pip3 install numpy
+   ```
+   
+3. **Important:** sometimes installing through `pip` will cause import errors (guess this is some version control issues). Instead, you can use `apt` to install stable versions as follows.
+
+   ```shell
+   sudo apt-get install python3-numpy python3-matplotlib python3-scipy
    ```
 
 ### Keras (Optional)

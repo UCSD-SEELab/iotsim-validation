@@ -17,6 +17,7 @@ Pi_IP = '192.168.1.62'
 MLP_LAYERS = [[6], [12], [18], [24, 8], [31, 16], [37, 16], [43, 16], \
         [49, 16], [55, 32], [64, 32]
 REG_MODEL = ['linear', 'poly', 'exp', 'log']
+times = 10
 
 def pwr_callback(pwr):
     if pwr_callback.start_time is None:
@@ -94,7 +95,6 @@ def main():
     # fix frequency to 1200MHz
     set_Pi3_freq(1200000)
     # for MLP
-    times = 10
     mac, avgPower, execTime = [], [], []
     for l in MLP_LAYERS:
         pm = PowerMeter('./power_mlp_{}.txt'.format(l))
@@ -109,8 +109,8 @@ def main():
         print(this_time, this_mac, this_power)
 
     log('mac: {}'.format(mac))
-    log('mac: {}'.format(avgPower))
-    log('mac: {}'.format(execTime))
+    log('avgPower: {}'.format(avgPower))
+    log('execTime: {}'.format(execTime))
     # try to fit
     ModelFit = ModelFitting()
     X = np.array(mac)
