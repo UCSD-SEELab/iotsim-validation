@@ -98,7 +98,7 @@ class ModelFitting:
         popt = [lg.coef_, lg.intercept_]
         predict = lg.predict(data_size)
         mape = self.MAPE(value, predict)
-        plot('linear', data_size, value, predict, case)
+        plot('linear', data_size, value, predict, case, mape)
         return popt, mape
 
     def fit_poly(self, data_size, value, case):
@@ -127,7 +127,7 @@ class ModelFitting:
         popt = [lg.coef_, lg.intercept_]
         predict = lg.predict(dsize_)
         mape = self.MAPE(value, predict)
-        plot('poly', data_size, value, predict, case)
+        plot('poly', data_size, value, predict, case, mape)
         return popt, mape
 
     def fit_exp(self, data_size, value, case):
@@ -154,7 +154,7 @@ class ModelFitting:
 
         predict = exp_func(data_size, *popt)
         mape = self.MAPE(value, predict)
-        plot('exp', data_size, value, predict, case)
+        plot('exp', data_size, value, predict, case, mape)
         return popt, mape
 
     def fit_log(self, data_size, value, case):
@@ -181,30 +181,25 @@ class ModelFitting:
 
         predict = log_func(data_size, *popt)
         mape = self.MAPE(value, predict)
-        plot('log', data_size, value, predict, case)
+        plot('log', data_size, value, predict, case, mape)
         return popt, mape
 
-def plot(model, X, Y, predict, case):
+def plot(model, X, Y, predict, case, mape):
     X = np.divide(X, 1000000) # normalize to M mac operations
-    fig, ax = plt.subplots(figsize=(5.5, 4))
+    fig, ax = plt.subplots(figsize=(4.5, 3.5))
     ax.plot(X, Y, 'b.', label='Measurement')
     ax.plot(X, predict, 'r-', label='Simulation')
     ax.legend()
+    
     ax.grid(True)
     ax.set_xlabel('MAC Operations (M)')
-    if case == 'power3b':
-        ax.set_title('Power Estimation on Raspberry Pi 3B')
+    if 'power' in case:
         ax.set_ylabel('Power (W)')
-    elif case == 'time3b':
-        ax.set_title('Exection Time Estimation on Raspberry Pi 3B')
+        ax.set_title('Power Estimation of case {}: MAPE={}'.format(case, mape))
+    elif 'time' in case:
         ax.set_ylabel('Exection Time (s)')
-    elif case == 'power0':
-        ax.set_title('Power Estimation on Raspberry Pi Zero')
-        ax.set_ylabel('Power (W)')
-    elif case == 'time0':
-        ax.set_title('Exection Time Estimation on Raspberry Pi Zero')
-        ax.set_ylabel('Exection Time (s)')
-    pic_name = case + '_' + model + 'png'
+        ax.set_title('Exection Time Estimation of case {}: MAPE={}'.format(case, mape))
+    pic_name = './img/' + case + '_' + model + '.png'
     plt.savefig(pic_name, dpi=300)
 
 def main():
