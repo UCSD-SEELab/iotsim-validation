@@ -1,10 +1,12 @@
 # Setup a Raspberry Pi node in the mesh network
 
-[Setup Raspberry Pi as Mesh Node](#Setup-Raspberry-Pi-as-Mesh-Node)
+This tutorial will walk you through all the steps to setup a Pi node as part of the mesh.
 
-[Setup Time Synchronization](#Setup-Time-Synchronization)
+[Setup Raspberry Pi as Mesh Node](#Setup-Raspberry-Pi-as-Mesh-Node): This part lists the steps to setup a mesh node.
 
-[Use Mosquitto with fixed interface](#Use-Mosquitto-with-fixed-interface)
+[Use Mosquitto with fixed interface](#Use-Mosquitto-with-fixed-interface): This part specifies the procedure to setup a MQTT broker with specified interface. This is used on Pi's acting as MQTT brokers.
+
+[Setup Time Synchronization (Optional)](#Setup-Time-Synchronization-(Optional)): This part includes setting up `ntp` to sync the time of Pi, which is however not useful as `ntp` does not work without Internet connection.
 
 ## Setup Raspberry Pi as Mesh Node
 
@@ -99,18 +101,6 @@
 
 [How To Configure batman-adv on the Raspberry Pi 3](https://www.reddit.com/r/darknetplan/comments/68s6jp/how_to_configure_batmanadv_on_the_raspberry_pi_3/).
 
-## Setup Time Synchronization
-
-According to [a blog](http://raspberrypi.tomasgreno.cz/ntp-client-and-server.html), if you want to sync Pi's time with NTP server:
-
-```shell
-sudo apt-get install ntp
-sudo systemctl stop systemd-timesyncd
-sudo systemctl disable systemd-timesyncd
-sudo /etc/init.d/ntp stop
-sudo /etc/init.d/ntp start
-```
-
 ## Use Mosquitto with fixed interface
 
 This is required only on Pi's running a broker, namely RPi 3B+'s in the network.
@@ -128,5 +118,17 @@ You can use the configuration file in this directory to start the mosquitto boun
 
 ```shell
 mosquitto -c ./mosquitto-eth0.conf -p 61613 -v
+```
+
+## Setup Time Synchronization (Optional)
+
+According to [a blog](http://raspberrypi.tomasgreno.cz/ntp-client-and-server.html), if you want to sync Pi's time with NTP server:
+
+```shell
+sudo apt-get install ntp
+sudo systemctl stop systemd-timesyncd
+sudo systemctl disable systemd-timesyncd
+sudo /etc/init.d/ntp stop
+sudo /etc/init.d/ntp start
 ```
 

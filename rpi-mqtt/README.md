@@ -1,6 +1,14 @@
-# Setup a Raspberry Pi node as MQTT client
+# Raspberry Pi node as a MQTT client
 
-Note: to use the scripts in this foler, installation of INA219 and paho-mqtt are required, both of which are included `rpi-mesh-setup/install.sh`.
+Scripts in this directory are applications running on a RPi which acts as a MQTT client. There are three modules that are required:
+
+* `paho-mqtt` is a Python module to work as a MQTT client.
+* `pi-ina219` is a Python module to interact with the current sensor INA219.
+* `numpy` is required to run local Linear Regression.
+
+All of the three modules are included in  `rpi-mesh-setup/install.sh`. In other words, by running `rpi-mesh-setup/install`, one node should be ready to run all of the applications as one node in our mesh network.
+
+The following section describes the procedures to setup a client node manually.
 
 ## Setup MQTT Client on Raspberry Pi Zero
 
@@ -17,12 +25,12 @@ Note: to use the scripts in this foler, installation of INA219 and paho-mqtt are
 pip3 install numpy
    ```
    
-3. To run the script in this folder
+3. To run the script in this folder:
 
    To start the client, there are at least 2 parameters you need to specify as command line arguments: 
 
    * the IP of the client, e.g. 172.27.0.2.
-   * the interval you want the lient to send power/temp data, e.g. 0.2s.
+   * the interval you want the client to send power/temp data, e.g. 0.2s.
    * Running every second, feed 1000kB to Linear Regression and publish 1KB after it. 
    * The total execution time of the client, e.g. 300s.
 
