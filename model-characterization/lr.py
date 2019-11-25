@@ -12,7 +12,6 @@ Date: 10/29/2019
 import numpy as np
 import argparse
 import time
-import RPi.GPIO as GPIO
 import socket
 
 UDP_IP = "169.254.209.38"
