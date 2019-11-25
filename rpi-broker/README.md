@@ -8,8 +8,6 @@
    mosquitto /home/pi/iotsim-validation/rpi-broker/mosquitto-wlan0.conf -p 61613 -v
    ```
 
-2. Power up/reset all ESP8266s. Check on Pi broker to ensure that every ESP is ready.
-
 3. Start the experiment by running script:
 
    ```shell
