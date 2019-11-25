@@ -18,6 +18,14 @@ import pickle
 import os
 import argparse
 import time
+import socket
+
+UDP_IP = "169.254.209.38"
+UDP_PORT = 5005
+ST_MSG = b'start'
+FI_MSG = b'stop'
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+model_dir = '/home/pi/iotsim-validation/model-characterization/models/'
 
 def read_img(img_path):
     '''
@@ -40,7 +48,7 @@ def train_model(img_path, hidden_layer):
     clf = MLPClassifier(hidden_layer_sizes=hidden_layer)
     clf.fit(X, y)
     # save model
-    model_name = './models/{}-{}.sav'.format(X.shape, hidden_layer)
+    model_name = model_dir + '{}-{}.sav'.format(X.shape, hidden_layer)
     pickle.dump(clf, open(model_name, 'wb'))
     print('Train model and save to {}'.format(model_name))
     print('MAC operations: {}'.format(MAC(img_path, hidden_layer, 1)))
@@ -50,7 +58,7 @@ def infer(img_path, hidden_layer):
     Load model and infer the result incoming image.
     '''
     X = read_img(img_path)
-    model_name = './models/{}-{}.sav'.format(X.shape, hidden_layer)
+    model_name = model_dir + '{}-{}.sav'.format(X.shape, hidden_layer)
     if not os.path.exists(model_name):
         raise Exception('No available model {}!'.format(model_name))
     clf = pickle.load(open(model_name, 'rb'))
@@ -95,10 +103,12 @@ def main():
         hidden_layer = tuple(args.layer)
         train_model(args.path, hidden_layer)
     elif args.mode == 'infer':
+        sock.sendto(ST_MSG, (UDP_IP, UDP_PORT))
         st_time = time.time()
         for i in range(args.times):
             infer('output.jpg', tuple(args.layer))
         run_time = time.time() - st_time
+        sock.sendto(FI_MSG, (UDP_IP, UDP_PORT))
         mac = MAC('output.jpg', tuple(args.layer), 1)
         print(run_time, mac)
     else:

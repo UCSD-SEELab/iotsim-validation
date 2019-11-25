@@ -15,8 +15,15 @@ import sys
 import time
 from powermeter import PowerMeter
 import subprocess
+import threading
 from fit_model import ModelFitting
 import numpy as np
+import socket
+
+UDP_IP = "169.254.209.38" # local IP
+UDP_PORT = 5005
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+sock.bind((UDP_IP, UDP_PORT))
 
 PWR_FILE = './power.txt'
 Pi_IP = '169.254.84.164'
@@ -24,8 +31,24 @@ MLP_LAYERS = [[6], [12], [18], [24, 8], [31, 16], [37, 16], [43, 16], \
         [49, 16], [55, 32], [64, 32]]
 REG_MODEL = ['linear', 'poly', 'exp', 'log']
 times_mlp = 500
-times_lr = 500
+times_lr = 100
 input_size_lr = 100000 # 100MB
+
+def log(str):
+    print(str)
+    with open('./result.txt', 'a+') as f:
+       f.write(str)
+       f.write('\n')
+
+def pwr_measure(pm, pwr_callback):
+    # wait for the start signal
+    data, addr = sock.recvfrom(10)
+    print(data)
+    pm.run(pwr_callback)
+    # wait for the finish signal
+    data, addr = sock.recvfrom(10)
+    print(data)
+    pm.stop()
 
 def pwr_callback(pwr):
     if pwr_callback.start_time is None:
@@ -99,12 +122,6 @@ def set_Pi3_freq(freq):
         host=Pi_IP, cmd=cmd), shell=True, \
         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-def log(str):
-    print(str)
-    with open('./result.txt', 'a+') as f:
-       f.write(str)
-       f.write('\n')
-
 def main():
     '''
     Fire workload, measure avg. power and apply to 4 candidate regressions.
@@ -124,9 +141,14 @@ def main():
         for l in MLP_LAYERS:
             pm = PowerMeter('./pwr/power{}_{}.txt'.format(mode, l))
             pwr_callback.pwr_data = []
-            pm.run(pwr_callback)
+
+            # start power measurement in multi-threading
+            # wait for the measurement to finish
+            x = threading.Thread(target=pwr_measure, args=(pm, pwr_callback,))
+            x.start()
             this_time, this_mac = run_mlp(l, times_mlp)
-            pm.stop()
+            x.join()
+
             this_time = this_time / times_mlp # divide by times
             this_power = cal_avg_pwr(pwr_callback.pwr_data)
             mac.append(this_mac)
@@ -138,10 +160,15 @@ def main():
             pm = PowerMeter('./pwr/power{}_{}_{}.txt'.format(mode, \
                     input_size_lr, output_size))
             pwr_callback.pwr_data = []
-            pm.run(pwr_callback)
+           
+            # start power measurement in multi-threading
+            # wait for the measurement to finish
+            x = threading.Thread(target=pwr_measure, args=(pm, pwr_callback,))
+            x.start()
             # input is 100MB, output is output_size kB
             this_time, this_mac = run_lr(input_size_lr, output_size, times_lr)
-            pm.stop()
+            x.join()
+
             this_time = this_time / times_lr # divide by times
             this_power = cal_avg_pwr(pwr_callback.pwr_data)
             mac.append(this_mac)
@@ -163,14 +190,14 @@ def main():
     for model in REG_MODEL:
         # case can be power3b_{mlp/lr}, time3b_{mlp/lr}, power0_{mlp/lr}, 
         # time0_{mlp/lr}
-        popt1, mse1 = ModelFit.fit(X, Y1, model, 'power'+mode)
-        popt2, mse2 = ModelFit.fit(X, Y2, model, 'time'+mode)
+        popt1, mape1 = ModelFit.fit(X, Y1, model, 'power'+mode)
+        popt2, mape2 = ModelFit.fit(X, Y2, model, 'time'+mode)
         log('fit model {} for power{}'.format(model, mode))
         log('popt: {}'.format(popt1))
-        log('mse: {}'.format(mse1))
+        log('mape: {}'.format(mape1))
         log('fit model {} for time{}'.format(model, mode))
         log('popt: {}'.format(popt2))
-        log('mape: {}'.format(mse2))
+        log('mape: {}'.format(mape2))
 
 
 

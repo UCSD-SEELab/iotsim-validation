@@ -12,6 +12,14 @@ Date: 10/29/2019
 import numpy as np
 import argparse
 import time
+import RPi.GPIO as GPIO
+import socket
+
+UDP_IP = "169.254.209.38"
+UDP_PORT = 5005
+ST_MSG = b'start'
+FI_MSG = b'stop'
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 class LinearRegression():
     def __init__(self, in_size, out_size):
@@ -57,10 +65,11 @@ if __name__ == '__main__':
     lr = LinearRegression(in_size, out_size)
     a = np.random.normal(size=(1, in_size))
 
+    sock.sendto(ST_MSG, (UDP_IP, UDP_PORT))
     st_time = time.time()
     for i in range(args.times):
         lr.run(a)
     run_time = time.time() - st_time
+    sock.sendto(FI_MSG, (UDP_IP, UDP_PORT))
     mac = lr.MAC()
     print(run_time, mac)
-
