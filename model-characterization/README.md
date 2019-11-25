@@ -22,6 +22,7 @@ The script tries to fit the collected power and execution time traces to 4 diffe
 1. To run LR,  `matplotlib` and `numpy` are required.
 
    ```shell
+   sudo apt-get install libatlas-base-dev # prerequisites
    sudo pip3 install matplotlib
    sudo pip3 install numpy
    ```
