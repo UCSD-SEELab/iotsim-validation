@@ -48,10 +48,12 @@ def pub_fake_data(input_size, output_size):
     last_time = time.time()
     while getattr(x, "do_run", True):
         if input_size > 0:
-            st = time.time()
+            st_lr = time.time()
             mylr.run(a)
-            print('Run {}'.format(time.time()-st))
+            fi_lr = time.time()
+            print('Run {}'.format(fi-st))
         client.publish(topic='fake', payload=fake_str)
+        print('Send {}'.format(time.time()-fi_lr))
         try:
             print(last_time + 1.0 - time.time())
             time.sleep(last_time + 1.0 - time.time())
