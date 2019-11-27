@@ -25,12 +25,12 @@ from powermeter import PowerMeter
 # test = 'original'
 
 def main():
-    if len(sys.argv) == 2:
+    if len(sys.argv) == 3:
     #    pt_interval = float(sys.argv[1])
     #    input_size = int(sys.argv[2])
     #    output_size = int(sys.argv[3])
         test = sys.argv[1]
-        exec_time = int(sys.argv[1])
+        exec_time = int(sys.argv[2])
     else:
         print('Incorrect number of input arguments!')
         exit(0)
@@ -47,10 +47,10 @@ def main():
     #else:
     #    lr = 0
     #    input_size = 0
-    bw = 10000 # 10000kbps=1.3MB/s
+    bw = 1000000 # 1000000kbps=100MB/s
     lr = 1
-    input_size_rpi0 = 0
-    output_size_rpi0 = 33333 # in B
+    input_size_rpi0 = 10000 # 0
+    output_size_rpi0 = 4  #10000 # in B
     output_size_rpi0_1 = 4 # in B
     output_size_rpi3_1 = 4 # in B
 
@@ -76,7 +76,7 @@ def main():
     print("(2) All ESPs are ready with ready msgs showing up on broker.")
     input("Press Enter to continue...")
 
-    exp.start_esp(lr)
+    #exp.start_esp(lr)
     exp.start_pi_zero(0.2, input_size_rpi0, output_size_rpi0, exec_time)
     exp.start_pi_zero_1(0.2, 0, output_size_rpi0_1, exec_time)
     exp.start_pi_3_2(0.2, 0, 0, exec_time)

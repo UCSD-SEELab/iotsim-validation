@@ -40,7 +40,7 @@ def on_connect(client, userdata, flags, rc):
 
 def on_message(client, userdata, msg):
     # save data
-    print("Received from pi broker:" + msg.topic + " " + str(msg.payload))
+    # print("Received from pi broker:" + msg.topic + " " + str(msg.payload))
     if msg.topic == "fake":
         payload = msg.payload.decode('utf-8')
         data_size = len(payload)

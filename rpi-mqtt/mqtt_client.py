@@ -28,6 +28,7 @@ myIP = None
 broker_IP = '172.27.0.2'
 broker_port = 61613
 client = None
+fake_interval = 0.2
 
 def pub_fake_data(input_size, output_size):
     '''
@@ -52,11 +53,12 @@ def pub_fake_data(input_size, output_size):
             mylr.run(a)
             fi_lr = time.time()
             print('Run {}'.format(fi_lr - st_lr))
+        st_pub = time.time()
         client.publish(topic='fake', payload=fake_str)
-        print('Send {}'.format(time.time() - fi_lr))
+        print('Send {}'.format(time.time() - st_pub))
         try:
-            print(last_time + 1.0 - time.time())
-            time.sleep(last_time + 1.0 - time.time())
+            print(last_time + fake_interval - time.time())
+            time.sleep(last_time + fake_interval - time.time())
         except Exception as e: # time overflow
             print(e)
         last_time = time.time()

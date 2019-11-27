@@ -24,7 +24,7 @@ Pi_zero_1_script = '/home/pi/iotsim-validation/rpi-mqtt/mqtt_rpi0.py'
 Pi_3_1_script = '/home/pi/iotsim-validation/rpi-mqtt/mqtt_rpi3.py'
 freq_script = '/home/pi/iotsim-validation/script/set_freq.sh'
 
-Broker_IP = '172.27.0.1'
+Broker_IP = '172.27.0.2'
 Broker_port = 61613
 Bridge_IP = '172.27.0.6'
 Pi_zero = ['172.27.0.3', '172.27.0.4', '172.27.0.5']
