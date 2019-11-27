@@ -37,8 +37,8 @@ def pub_fake_data(input_size, output_size):
     x = threading.currentThread()
     print('start lr with input {}kB and output {}kB'.format(input_size, output_size))
     # covert input_size and output_size from KB to B
-    input_size = input_size << 3
-    output_size = output_size << 3
+    input_size = input_size << 10
+    output_size = output_size << 10
     if input_size > 0:
         # divide by 4, obtain the # of floats we need
         mylr = lr.LinearRegression(input_size >> 2, output_size >> 2)
@@ -51,9 +51,9 @@ def pub_fake_data(input_size, output_size):
             st_lr = time.time()
             mylr.run(a)
             fi_lr = time.time()
-            print('Run {}'.format(fi-st))
+            print('Run {}'.format(fi_lr - st_lr))
         client.publish(topic='fake', payload=fake_str)
-        print('Send {}'.format(time.time()-fi_lr))
+        print('Send {}'.format(time.time() - fi_lr))
         try:
             print(last_time + 1.0 - time.time())
             time.sleep(last_time + 1.0 - time.time())
