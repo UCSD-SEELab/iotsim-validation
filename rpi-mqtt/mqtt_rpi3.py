@@ -46,7 +46,7 @@ def on_message(client, userdata, msg):
         data_size = len(payload)
         # get the input size and output size in Bytes
         input_size = data_size # input_size in Byte is half
-        output_size = output_size << 10 # kB to B, output_size in Byte
+        # output_size = output_size << 10 # kB to B, output_size in Byte
         print('start lr with input {}B and output {}B'.format(input_size, output_size))
 
         mylr = lr.LinearRegression(input_size >> 2, output_size >> 2)

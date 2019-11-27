@@ -50,9 +50,9 @@ def main():
     bw = 10000 # 10000kbps=1.3MB/s
     lr = 1
     input_size_rpi0 = 0
-    output_size_rpi0 = 3333 # in kB
-    output_size_rpi0_1 = 20 # in kB
-    output_size_rpi3_1 = 20 # in kB
+    output_size_rpi0 = 33333 # in B
+    output_size_rpi0_1 = 4 # in B
+    output_size_rpi3_1 = 4 # in B
 
     # measure power of Pi broker with powermeter
     # save data to data directory
