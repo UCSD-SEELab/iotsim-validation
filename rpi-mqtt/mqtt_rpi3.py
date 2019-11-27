@@ -2,7 +2,7 @@
 
 '''
 Example module to publish power, temperature and fake data via MQTT.
-Special scripts for RPi0_1. Subscribe data from broker, every time it receives
+Special scripts for RPi3_1. Subscribe data from broker, every time it receives
 data from broker, it will process half of them and directly forward the rest 
 half.
 Work on Python 3.5.3 of Raspberry Pi Zero
@@ -35,17 +35,17 @@ output_size = None
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code " + str(rc))
-    client.subscribe("fake") # subscribe to fake data
+    client.subscribe("fake_rpi0") # subscribe to fake data
     #client.subscribe("status") # ready status channel
 
 def on_message(client, userdata, msg):
     # save data
     print("Received from pi broker:" + msg.topic + " " + str(msg.payload))
-    if msg.topic == "fake":
+    if msg.topic == "fake_rpi0":
         payload = msg.payload.decode('utf-8')
         data_size = len(payload)
         # get the input size and output size in Bytes
-        input_size = data_size >> 1 # input_size in Byte is half
+        input_size = data_size # input_size in Byte is half
         output_size = output_size << 10 # kB to B, output_size in Byte
         print('start lr with input {}B and output {}B'.format(input_size, output_size))
 
@@ -56,8 +56,8 @@ def on_message(client, userdata, msg):
         fi_lr = time.time()
         print('Run {}'.format(fi_lr - st_lr))
         # the total size of published data is input_size + output_size
-        client.publish(topic="fake_rpi0", payload=payload[:(input_size+output_size)])
-        print('Send {}'.format(time.time() - fi_lr))
+        #client.publish(topic="fake_rpi0", payload=payload[:(input_size+output_size)])
+        #print('Send {}'.format(time.time() - fi_lr))
 
 def read_temp():
     stream = os.popen('vcgencmd measure_temp | egrep -o \'[0-9]*\\.[0-9]*\'')

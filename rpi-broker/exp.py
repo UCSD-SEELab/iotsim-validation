@@ -20,12 +20,14 @@ data_path = '/home/pi/iotsim-validation/data/'
 Bridge_script = '/home/pi/iotsim-validation/rpi-mqtt/mqtt_bridge.py'
 Bridge_config = '/home/pi/iotsim-validation/rpi-broker/mosquitto-eth0.conf'
 Pi_zero_script = '/home/pi/iotsim-validation/rpi-mqtt/mqtt_client.py'
+Pi_zero_1_script = '/home/pi/iotsim-validation/rpi-mqtt/mqtt_rpi0.py'
+Pi_3_1_script = '/home/pi/iotsim-validation/rpi-mqtt/mqtt_rpi3.py'
 freq_script = '/home/pi/iotsim-validation/script/set_freq.sh'
 
 Broker_IP = '172.27.0.1'
 Broker_port = 61613
 Bridge_IP = '172.27.0.6'
-Pi_zero = ['172.27.0.2', '172.27.0.3', '172.27.0.4', '172.27.0.5']
+Pi_zero = ['172.27.0.3', '172.27.0.4', '172.27.0.5']
 Pi_client = ['172.27.0.1', '172.27.0.2', '172.27.0.3', '172.27.0.4',\
         '172.27.0.5', '172.27.0.6']
 
@@ -98,15 +100,37 @@ def start_pi_zero(pt_interval, input_size, output_size, exec_time):
             user='pi', host=Pi_IP, cmd=cmd), shell=True, \
             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-def start_pi_3(pt_interval, input_size, output_size, exec_time):
-    for Pi_IP in [Bridge_IP, Broker_IP]:
-        cmd = 'python3 {} {} {} {} {} {} > {} 2>&1'.format(\
-            Pi_zero_script, Pi_IP, pt_interval, \
-            input_size, output_size, exec_time, pi_client_log)
-        print('start mqtt client on pi {} by {}'.format(Pi_IP, cmd))
-        process = subprocess.Popen("ssh {user}@{host} \'{cmd}\'".format( \
-            user='pi', host=Pi_IP, cmd=cmd), shell=True, \
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+def start_pi_zero_1(pt_interval, input_size, output_size, exec_time):
+    # input_size here is useless!
+    Pi_IP = '172.27.0.2'
+    cmd = 'python3 {} {} {} {} {} {} > {} 2>&1'.format(\
+        Pi_zero_1_script, Pi_IP, pt_interval, \
+        input_size, output_size, exec_time, pi_client_log)
+    print('start mqtt client on pi {} by {}'.format(Pi_IP, cmd))
+    process = subprocess.Popen("ssh {user}@{host} \'{cmd}\'".format( \
+        user='pi', host=Pi_IP, cmd=cmd), shell=True, \
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+def start_pi_3_1(pt_interval, input_size, output_size, exec_time):
+    # input_size here are useless!
+    Pi_IP = '172.27.0.1'
+    cmd = 'python3 {} {} {} {} {} {} > {} 2>&1'.format(\
+        Pi_3_1_script, Pi_IP, pt_interval, \
+        input_size, output_size, exec_time, pi_client_log)
+    print('start mqtt client on pi {} by {}'.format(Pi_IP, cmd))
+    process = subprocess.Popen("ssh {user}@{host} \'{cmd}\'".format( \
+        user='pi', host=Pi_IP, cmd=cmd), shell=True, \
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+def start_pi_3_2(pt_interval, input_size, output_size, exec_time):
+    Pi_IP = Bridge_IP
+    cmd = 'python3 {} {} {} {} {} {} > {} 2>&1'.format(\
+        Pi_zero_script, Pi_IP, pt_interval, \
+        input_size, output_size, exec_time, pi_client_log)
+    print('start mqtt client on pi {} by {}'.format(Pi_IP, cmd))
+    process = subprocess.Popen("ssh {user}@{host} \'{cmd}\'".format( \
+        user='pi', host=Pi_IP, cmd=cmd), shell=True, \
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 def start_data_collection(test_case):
     cmd = 'python3 {} {} > {} 2>&1'.format(data_collect_script, \
