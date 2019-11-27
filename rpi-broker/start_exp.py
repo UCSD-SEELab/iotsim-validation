@@ -36,17 +36,23 @@ def main():
         exit(0)
 
     # bw setting
-    if 'limit_bw' in test:
-        bw = 100 # 100kbps=13kB/s
-    else:
-        bw = 10000 # 10000kbps=1.3MB/s
+    #if 'limit_bw' in test:
+    #    bw = 100 # 100kbps=13kB/s
+    #else:
+    #    bw = 10000 # 10000kbps=1.3MB/s
     # lr setting
-    if 'lr' in test:
-        lr = 1
-        input_size = 100000 # 100MB
-    else:
-        lr = 0
-        input_size = 0
+    #if 'lr' in test:
+    #    lr = 1
+    #    input_size = 100000 # 100MB
+    #else:
+    #    lr = 0
+    #    input_size = 0
+    bw = 1000000 # 1000000kbps=100MB/s
+    lr = 1
+    input_size_rpi0 = 10000 # 0
+    output_size_rpi0 = 4  #10000 # in B
+    output_size_rpi0_1 = 4 # in B
+    output_size_rpi3_1 = 4 # in B
 
     # measure power of Pi broker with powermeter
     # save data to data directory
@@ -60,8 +66,7 @@ def main():
     # set rpi3's freq to 1200MHz
     exp_set.set_Pi3_freq(1200000)
     # bw settings
-    if not 'no_bw' in test:
-        exp_set.set_bw(bw)
+    exp_set.set_bw(bw)
     # init powermeter module
     pm = PowerMeter(PWR_FILE)
 
@@ -71,9 +76,11 @@ def main():
     print("(2) All ESPs are ready with ready msgs showing up on broker.")
     input("Press Enter to continue...")
 
-    exp.start_esp(lr)
-    exp.start_pi_zero(0.2, input_size, 20, exec_time)
-    exp.start_pi_3(0.2, input_size, 80, exec_time)
+    #exp.start_esp(lr)
+    exp.start_pi_zero(0.2, input_size_rpi0, output_size_rpi0, exec_time)
+    exp.start_pi_zero_1(0.2, 0, output_size_rpi0_1, exec_time)
+    exp.start_pi_3_2(0.2, 0, 0, exec_time)
+    exp.start_pi_3_1(0.2, 0, output_size_rpi3_1, exec_time)
     exp.start_data_collection(test)
     time.sleep(2)
     pm.run()

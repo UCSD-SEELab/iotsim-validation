@@ -58,11 +58,11 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    # convert KByte to number of floats, << 3 then >> 2
-    in_size = args.input << 1
-    out_size = args.output << 1
-    lr = LinearRegression(in_size, out_size)
-    a = np.random.normal(size=(1, in_size))
+    # convert Byte to number of floats, >> 2
+    #in_size = args.input << 8
+    #out_size = args.output << 8
+    lr = LinearRegression(in_size >> 2, out_size >> 2)
+    a = np.random.normal(size=(1, in_size >> 2))
 
     sock.sendto(ST_MSG, (UDP_IP, UDP_PORT))
     st_time = time.time()

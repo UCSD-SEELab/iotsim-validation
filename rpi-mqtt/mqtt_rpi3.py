@@ -2,13 +2,15 @@
 
 '''
 Example module to publish power, temperature and fake data via MQTT.
+Special scripts for RPi3_1. Subscribe data from broker, every time it receives
+data from broker, it will process half of them and directly forward the rest 
+half.
 Work on Python 3.5.3 of Raspberry Pi Zero
 
 To start the client, you need to specify the IP of the client
 and the interval you want it to send power/temp. You also need to specify the
 # of Kbytes to as input to Linear Regression, the # of Kbytes to send after LR
-every second. The last argument is the execution
-time.
+every second. The last argument is the execution time.
     python3 mqtt_client.py 172.27.0.2 0.2 1000 1 300
 
 Author: Xiaofan Yu
@@ -28,40 +30,34 @@ myIP = None
 broker_IP = '172.27.0.2'
 broker_port = 61613
 client = None
-fake_interval = 0.2
+output_size = None
 
-def pub_fake_data(input_size, output_size):
-    '''
-    Publish certain bytes of fake date every second.
-    Note the unit for input_size and output_size are kB.
-    '''
-    x = threading.currentThread()
-    print('start lr with input {}kB and output {}kB'.format(input_size, output_size))
-    # covert input_size and output_size from KB to B
-    #input_size = input_size << 10
-    #output_size = output_size << 10
-    if input_size > 0:
-        # divide by 4, obtain the # of floats we need
+# The callback for when the client receives a CONNACK response from the server.
+def on_connect(client, userdata, flags, rc):
+    print("Connected with result code " + str(rc))
+    client.subscribe("fake_rpi0") # subscribe to fake data
+    #client.subscribe("status") # ready status channel
+
+def on_message(client, userdata, msg):
+    # save data
+    # print("Received from pi broker:" + msg.topic + " " + str(msg.payload))
+    if msg.topic == "fake_rpi0":
+        payload = msg.payload.decode('utf-8')
+        data_size = len(payload)
+        # get the input size and output size in Bytes
+        input_size = data_size # input_size in Byte is half
+        # output_size = output_size << 10 # kB to B, output_size in Byte
+        print('start lr with input {}B and output {}B'.format(input_size, output_size))
+
         mylr = lr.LinearRegression(input_size >> 2, output_size >> 2)
         a = np.random.normal(size=(1, input_size >> 2))
-
-    fake_str = 'x' * output_size
-    last_time = time.time()
-    while getattr(x, "do_run", True):
-        if input_size > 0:
-            st_lr = time.time()
-            mylr.run(a)
-            fi_lr = time.time()
-            print('Run {}'.format(fi_lr - st_lr))
-        st_pub = time.time()
-        client.publish(topic='fake', payload=fake_str)
-        print('Send {}'.format(time.time() - st_pub))
-        try:
-            print(last_time + fake_interval - time.time())
-            time.sleep(last_time + fake_interval - time.time())
-        except Exception as e: # time overflow
-            print(e)
-        last_time = time.time()
+        st_lr = time.time()
+        mylr.run(a)
+        fi_lr = time.time()
+        print('Run {}'.format(fi_lr - st_lr))
+        # the total size of published data is input_size + output_size
+        #client.publish(topic="fake_rpi0", payload=payload[:(input_size+output_size)])
+        #print('Send {}'.format(time.time() - fi_lr))
 
 def read_temp():
     stream = os.popen('vcgencmd measure_temp | egrep -o \'[0-9]*\\.[0-9]*\'')
@@ -76,6 +72,7 @@ def main():
         myIP = str(sys.argv[1])
         pt_interval = float(sys.argv[2])
         input_size = int(sys.argv[3])
+        global output_size
         output_size = int(sys.argv[4])
         exec_time = int(sys.argv[5])
     else:
@@ -85,11 +82,9 @@ def main():
     global client
     client = mqtt.Client(myIP)
     client.connect(broker_IP, broker_port, 60)
-
-    if output_size > 0:
-        x = threading.Thread(target=pub_fake_data, \
-            args=(input_size, output_size))
-        x.start()
+    client.on_connect = on_connect
+    client.on_message = on_message
+    client.loop_start() # nonblocking version
 
     # get power data and temperature data
     start_time = time.time()
@@ -105,10 +100,6 @@ def main():
         if time.time() - start_time >= exec_time:
             break
 
-    # collect the thread
-    if output_size > 0:
-        x.do_run = False
-        x.join()
     print("End of experiment! :)")
 
 if __name__ == '__main__':

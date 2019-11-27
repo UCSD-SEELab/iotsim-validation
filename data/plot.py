@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 import os
 import sys
 import numpy as np
+import math
 data_dir = None
 result_file = './result.txt'
 
@@ -115,7 +116,7 @@ def log(str):
         f.write(str)
 
 all_devices = ['172.27.0.1', '172.27.0.2', '172.27.0.3', '172.27.0.4',
-        '172.27.0.5', '172.27.0.6', 'esp1', 'esp2', 'esp3', 'esp4']
+        '172.27.0.5', '172.27.0.6']#, 'esp1', 'esp2', 'esp3', 'esp4']
 def main():
     if len(sys.argv) >= 2:
         test_case = sys.argv[1]
@@ -137,9 +138,25 @@ def main():
             time_pm = np.array(time_pm)
             power_pm = np.array(power_pm)
             power = align_samples(target_ts, time_pm, power_pm)
+            # print(power)
+            nan_cnt = 0
+            try:
+                while True:
+                    idx = power.index(np.nan)
+                    power.pop(idx)
+                    time.pop(idx)
+                    temp.pop(idx)
+                    print(nan_cnt)
+                    nan_cnt += 1
+            except:
+                print('no more nans!')
+                pass
         time = [t - time[0] for t in time]
-        log('{}: avg power: {}, avg delay: {}\n'.format(device, \
-            sum(power) / len(power),sum(delay) / len(delay)))
+        log('{}: avg power: {}, max power: {}, min power: {}, \
+            avg delay: {}\n'.format(device, sum(power) / len(power),
+                max(power), min(power), sum(delay) / len(delay)))
+        log('avg temp: {}, max temp: {}, min temp:{}'.format( \
+                sum(temp) / len(temp), max(temp), min(temp)))
 
         # plot
         color = 'tab:red'
