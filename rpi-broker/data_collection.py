@@ -19,6 +19,8 @@ import time
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 dir_path += '/../data/'
+broker_IP = '172.27.0.2'
+broker_port = 61613
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
@@ -54,9 +56,6 @@ def main():
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
     print("data directory is {}".format(dir_path))
-
-    broker_IP = '172.27.0.1'
-    broker_port = 61613
 
     client = mqtt.Client("data_collection")
     client.connect(broker_IP, broker_port, 60)

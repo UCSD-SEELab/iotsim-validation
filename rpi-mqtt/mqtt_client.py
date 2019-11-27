@@ -25,7 +25,7 @@ import numpy as np
 ADDRESS_INA219 = 0x40 # no drop
 
 myIP = None
-broker_IP = '172.27.0.1'
+broker_IP = '172.27.0.2'
 broker_port = 61613
 client = None
 

@@ -36,7 +36,7 @@ def on_message_pi(client, userdata, msg):
     except Exception as e:
         print(e)
 
-broker_IP = '172.27.0.1'
+broker_IP = '172.27.0.2'
 broker_port = 61613
 
 client_pi = mqtt.Client("Bridge")
