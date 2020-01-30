@@ -22,7 +22,7 @@ The following section describes the procedures to setup a client node manually.
 2. Install `numpy`:
 
    ```shell
-pip3 install numpy
+   pip3 install numpy
    ```
    
 3. To run the script in this folder:
