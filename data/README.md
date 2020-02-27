@@ -1,14 +1,16 @@
 # Collected data description
 
-This tutorial will walk you through the organization of experiment data from top to bottom. 
+This tutorial will walk you through the organization of experiment data from top to bottom.
 
 Each folder in this directory contains a set of collected data with specific settings (explained in [Experiment Sets](#Experiment-Sets)). There are 11 `.txt` files in each folder, recording the collected traces from each device and an additional file from powermeter (explained in [Devices](#Devices)). Finally, each line in a `.txt` files notes collecting time, power, temperature and delay (explained in [Data Traces](#Data-Traces)). We also provide a script for visualization, see [Instructions for Visualization](#Instructions-for-Visualization).
 
 All plots are stored in the `img` folder, with test case as their name. All results are saved in `result.txt`, including the average power and delay in each test case.
 
+The folder `reliot-plot` contains the scripts and data for plots in the paper.
+
 ## Test Scenarios in Paper
 
-The core idea is to test power, temperature and reliability under 
+The core idea is to test power, temperature and reliability under computation offloading and different ambient temperature.
 
 * **Scenario 1:** rpi02, rpi03, rpi04 send 10kB to rpi01 every 200ms. After rpi01 receives the packet, it fires a linear regression of 5kB->4B. The generated 4B and the rest 5kB will be sent to rpi31. rpi31 runs the linear regression of 5KB->4B for the rest 5kB once it receives the packet. Ambient temperature is 25 °C.
 
@@ -40,7 +42,7 @@ The core idea is to test power, temperature and reliability under
 
 * **limit_bw_old** - same setting as **original_old**, with 100kbps limited bandwidth between each pair of Pi's.
 
-* **original_1/2** - setup the network in 2nd floor of CSE building . Power & temperature sampling is 0.2s, with 80kB fake data sending from Pi3's and 20kB fake data sending from Pi zero's in each second. Total experiment time is 300s. In this case, there is a 1.25MB/s (10Mbps) bandwidth limitation on each Pi's Wi-Fi adapter. 
+* **original_1/2** - setup the network in 2nd floor of CSE building . Power & temperature sampling is 0.2s, with 80kB fake data sending from Pi3's and 20kB fake data sending from Pi zero's in each second. Total experiment time is 300s. In this case, there is a 1.25MB/s (10Mbps) bandwidth limitation on each Pi's Wi-Fi adapter.
 
   <font color="red">original_1 is bad. It has non-monotinic time stamps and spans to 400 seconds.</font>
 
